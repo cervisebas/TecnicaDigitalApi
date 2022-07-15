@@ -2,3 +2,5 @@ node_modules
 image/**
 tmp_files/**
 !image/default.png
+!image/default-admin.png
+!image/default-admin-bad.png
