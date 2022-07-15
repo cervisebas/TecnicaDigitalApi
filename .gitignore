@@ -1,0 +1,4 @@
+node_modules
+image/**
+tmp_files/**
+!image/default.png
