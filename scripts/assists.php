@@ -53,7 +53,9 @@
                         array_push($dataNotify, array('to' => $value['idStudent'], 'title' => $title, 'body' => $body));
                         //$notification->send($value['idStudent'], $title, $body);
                     }
-                    $notification->multiSend($dataNotify);
+                    //$notification->multiSend($dataNotify);
+                    $dataNotify = base64_encode(serialize($dataNotify));
+                    $db->Query("INSERT INTO `notifications`(`id`, `datas`) VALUES (NULL, '$dataNotify')");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -152,7 +154,8 @@
                             'id' => $assist['id'],
                             'date' => $date,
                             'hour' => $assist['hour'],
-                            'status' => ($assist['status'] == '1')? true: false
+                            'status' => ($assist['status'] == '1')? true: false,
+                            'credential' => ($assist['credential'] == '1')? true: false
                         ));
                     }
                     usort($result, function($a, $b) {
@@ -264,7 +267,7 @@
                             'date' => $date,
                             'hour' => $assist['hour'],
                             'status' => ($assist['status'] == '1'),
-                            'credential' => ($assist['credential'] == 1)
+                            'credential' => ($assist['credential'] == "1")
                         ));
                     }
                     usort($result, function($a, $b) {

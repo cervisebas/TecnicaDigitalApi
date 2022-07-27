@@ -207,6 +207,7 @@
                 if ($consult) {
                     if ($consult->num_rows == 0) return $responses->errorData("No se encontró el alumno.");
                     $data = $consult->fetch_array();
+                    if ($data['curse'] == base64_encode('Archivados')) return $responses->errorData("No se encontró el alumno.");
                     return $responses->goodData($data['id']);
                 }
                 return $responses->error2;
