@@ -385,5 +385,5 @@
         return;
     }
 
-    echo $responses->errorNoPost;
+    echo json_encode($responses->errorNoPost);
 ?>
