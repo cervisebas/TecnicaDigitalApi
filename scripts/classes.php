@@ -13,4 +13,5 @@
     include_once 'console_verify.php';
     include_once 'firebase_messaging.php';
     include_once 'notifications.php';
+    include_once 'records.php';
 ?>

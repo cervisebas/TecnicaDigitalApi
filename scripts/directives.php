@@ -6,6 +6,8 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 $permissions = new DirectivesPermissionSystem();
                 $verifyData = new VerifyData();
                 $fileSystem = new FileSystem();
@@ -19,7 +21,10 @@
                 $encrypt = password_hash($password, PASSWORD_DEFAULT);
                 $consult = $db->QueryAndConect("INSERT INTO `directives`(`id`, `name`, `position`, `dni`, `picture`, `username`, `password`) VALUES (NULL, '$name', '$position', '$dni', '$image', '$username', '$encrypt')");
                 if ($consult['exec']) {
-                    $permissions->create($consult['connection']->insert_id, $permissionLevel);
+                    $newId = $consult['connection']->insert_id;
+                    $permissions->create($newId, $permissionLevel);
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $records->create($idDirective, "El directivo @$usernameDirective añadió un nuevo directivo (#$newId).", 2, "Añadir directivo", "Directivos");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -31,6 +36,8 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 4);
@@ -54,10 +61,16 @@
                 if (!$verifyData->is_empty($permissionLevel)) {
                     $permission = $permission->edit($idModify, $permissionLevel);
                     if (is_object($permission)) return $permission;
-                    if ($permission) return $responses->good;
+                    if ($permission) {
+                        $usernameDirective = $directive->getData_system($idDirective)['username'];
+                        $records->create($idDirective, "El directivo @$usernameDirective cambio los permisos del directivo #$idModify.", 1, "Cambiar permisos", "Directivos");
+                        return $responses->good;
+                    }
                 }
                 $consult = $db->Query("UPDATE `directives` SET $edit WHERE `id`=$idModify");
                 if ($consult) {
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $records->create($idDirective, "El directivo @$usernameDirective edito la información del directivo #$idModify.", 1, "Editar directivo", "Directivos");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -69,12 +82,14 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
+                $record = new RecordSystem();
                 $consult = $db->Query("SELECT * FROM `directives` WHERE `username`='$username'");
                 if ($consult) {
                     if ($consult->num_rows !== 0) {
                         $data = $consult->fetch_array();
                         if (password_verify($password, $data['password'])) {
                             $date = date('d/m/Y');
+                            $record->create($data['id'], "Inicio de sesión detectado: @".$data['username'].".", 3, "Inicio de sesión", "Directivo");
                             return $responses->goodData(array(
                                 'id' => $data['id'],
                                 'picture' => $data['picture'],
@@ -183,6 +198,7 @@
                     'id' => '-1',
                     'name' => base64_encode('Usuario perdido'),
                     'position' => base64_encode('Ninguna'),
+                    'username' => base64_encode('ninguna'),
                     'picture' => base64_encode('default-admin-bad.png')
                 );
                 $consult = $db->Query("SELECT * FROM `directives` WHERE `id`=$idDirective");
@@ -193,6 +209,7 @@
                         'id' => $dataUser['id'],
                         'name' => $dataUser['name'],
                         'position' => $dataUser['position'],
+                        'username' => $dataUser['username'],
                         'picture' => $dataUser['picture']
                     ));
                 }

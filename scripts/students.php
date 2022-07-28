@@ -8,6 +8,8 @@
                 $db = new DBSystem();
                 $verifyData = new VerifyData();
                 $fileSystem = new FileSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
@@ -19,7 +21,11 @@
                 $email = '';
                 if ($verifyData->issetDataPost(array('email'))) $email = $_POST['email'];
                 $consult = $db->Query("INSERT INTO `students`(`id`, `name`, `dni`, `curse`, `tel`, `email`, `date`, `picture`) VALUES (NULL, '$name', '$dni', '$curse', '$tel', '$email', '$date', '$image')");
-                if ($consult) return $responses->good;
+                if ($consult) {
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $records->create($idDirective, "El directivo @$usernameDirective añadió un nuevo estudiante.", 2, "Añadir estudiante", "Estudiantes");
+                    return $responses->good;
+                }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->error1;
@@ -29,6 +35,8 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
@@ -36,7 +44,11 @@
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
                 $consult = $db->Query("DELETE FROM `students` WHERE `id`=$idStudent");
-                if ($consult) return $responses->good;
+                if ($consult) {
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $records->create($idDirective, "El directivo @$usernameDirective elimino el estudiante #$idStudent.", 1, "Borrar estudiante", "Estudiantes");
+                    return $responses->good;
+                }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->error1;
@@ -46,6 +58,8 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
@@ -66,7 +80,11 @@
                     $edit = $edit.((strlen($edit) != 0)? ",": "")."`picture`='$image'";
                 }
                 $consult = $db->Query("UPDATE `students` SET $edit WHERE `id`=$idStudent");
-                if ($consult) return $responses->good;
+                if ($consult) {
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $records->create($idDirective, "El directivo @$usernameDirective edito la información del estudiante #$idStudent.", 1, "Editar estudiante", "Estudiantes");
+                    return $responses->good;
+                }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->error1;

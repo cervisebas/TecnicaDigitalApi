@@ -7,13 +7,20 @@
             try {
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
                 $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$hour', '0')");
-                if ($consult['exec']) return $responses->goodData($consult['connection']->insert_id);
+                if ($consult['exec']) {
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $newCurse = base64_decode($course);
+                    $records->create($idDirective, "El directivo @$usernameDirective creo un nuevo registro para $newCurse", 2, "Creación de registro", "Asistencia");
+                    return $responses->goodData($consult['connection']->insert_id);
+                }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->error1;
@@ -24,7 +31,8 @@
             try {
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
-                $notification = new NotificationSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
                 if (is_object($verify)) return $verify;
@@ -40,6 +48,7 @@
                     $lines = $lines.$c."($id, $idStudent, $idGroup, '$time', '$status', '0')";
                 }
                 $consult = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES $lines ON DUPLICATE KEY UPDATE `hour`=CASE WHEN status='1' THEN hour ELSE VALUES(hour) END, `status`=VALUES(status)");
+                $getActualData = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
                 $consult2 = $db->Query("UPDATE `groups` SET `status`='1' WHERE `id`=$idGroup");
                 if ($consult && $consult2) {
                     $dataNotify = array();
@@ -51,11 +60,12 @@
                         $date = date("d/m/Y");
                         $body = (strval($value['check']) == "1")? "El alumno estuvo presente el día $date.": "El alumno estuvo ausente el día $date.";
                         array_push($dataNotify, array('to' => $value['idStudent'], 'title' => $title, 'body' => $body));
-                        //$notification->send($value['idStudent'], $title, $body);
                     }
-                    //$notification->multiSend($dataNotify);
                     $dataNotify = base64_encode(serialize($dataNotify));
                     $db->Query("INSERT INTO `notifications`(`id`, `datas`) VALUES (NULL, '$dataNotify')");
+                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $getActualData = $getActualData->fetch_array();
+                    if ($getActualData['status'] == "1") $records->create($idDirective, "El directivo @$usernameDirective edito el registro #$idGroup.", 1, "Edicion de registro", "Asistencia"); else $records->create($idDirective, "El directivo @$usernameDirective confirmo el registro #$idGroup.", 1, "Confirmación de registro", "Asistencia");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -117,17 +127,23 @@
         public function delete($idDirective, $idGroup) {
             $responses = new Responses();
             try {
+                $db = new DBSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $db = new DBSystem();
                 $consult = $db->Query("DELETE FROM `assists` WHERE `id_group`=$idGroup");
                 if ($consult) {
                     $consult2 = $db->Query("DELETE FROM `groups` WHERE `id`=$idGroup");
-                    if ($consult2) return $responses->good;
+                    if ($consult2) {
+                        $usernameDirective = $directive->getData_system($idDirective)['username'];
+                        $records->create($idDirective, "El directivo @$usernameDirective borro el registro #$idGroup", 1, "Borrar registro", "Asistencia");
+                        return $responses->good;
+                    }
                     return $responses->error2;
                 }
                 return $responses->error2;

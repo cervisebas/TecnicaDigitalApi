@@ -25,6 +25,7 @@
     $assist = new AssistSystem();
     $console = new ConsoleSystem();
     $annotations = new AnnotationSystem();
+    $records = new RecordSystem();
     
     # **************************** Only Students And Family ********************************
     if (isset($_POST['family_login'])) {
@@ -346,6 +347,22 @@
             }
             $delete = $directives->delete($idDirective, $_POST['idDirective']);
             echo json_encode($delete);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+
+    // Records
+    if (isset($_POST['getRecords'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $records->getAll($idDirective);
+            echo json_encode($get);
             return;
         }
         echo json_encode($responses->errorTypical);
