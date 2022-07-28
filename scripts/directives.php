@@ -6,7 +6,6 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
-                $directive = new DirectiveSystem();
                 $records = new RecordSystem();
                 $permissions = new DirectivesPermissionSystem();
                 $verifyData = new VerifyData();
@@ -23,7 +22,7 @@
                 if ($consult['exec']) {
                     $newId = $consult['connection']->insert_id;
                     $permissions->create($newId, $permissionLevel);
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($this->getData_system($idDirective)['datas']['username']);
                     $records->create($idDirective, "El directivo @$usernameDirective añadió un nuevo directivo (#$newId).", 2, "Añadir directivo", "Directivos");
                     return $responses->good;
                 }
@@ -36,7 +35,6 @@
             $responses = new Responses();
             try {
                 $db = new DBSystem();
-                $directive = new DirectiveSystem();
                 $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
@@ -62,14 +60,14 @@
                     $permission = $permission->edit($idModify, $permissionLevel);
                     if (is_object($permission)) return $permission;
                     if ($permission) {
-                        $usernameDirective = $directive->getData_system($idDirective)['username'];
+                        $usernameDirective = base64_decode($this->getData_system($idDirective)['datas']['username']);
                         $records->create($idDirective, "El directivo @$usernameDirective cambio los permisos del directivo #$idModify.", 1, "Cambiar permisos", "Directivos");
                         return $responses->good;
                     }
                 }
                 $consult = $db->Query("UPDATE `directives` SET $edit WHERE `id`=$idModify");
                 if ($consult) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($this->getData_system($idDirective)['datas']['username']);
                     $records->create($idDirective, "El directivo @$usernameDirective edito la información del directivo #$idModify.", 1, "Editar directivo", "Directivos");
                     return $responses->good;
                 }
@@ -89,7 +87,8 @@
                         $data = $consult->fetch_array();
                         if (password_verify($password, $data['password'])) {
                             $date = date('d/m/Y');
-                            $record->create($data['id'], "Inicio de sesión detectado: @".$data['username'].".", 3, "Inicio de sesión", "Directivo");
+                            $newUsername = base64_decode($data['username']);
+                            $record->create($data['id'], "Inicio de sesión detectado: @$newUsername.", 3, "Inicio de sesión", "Directivo");
                             return $responses->goodData(array(
                                 'id' => $data['id'],
                                 'picture' => $data['picture'],

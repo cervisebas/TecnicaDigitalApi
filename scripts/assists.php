@@ -16,7 +16,7 @@
                 /* ################################################## */
                 $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$hour', '0')");
                 if ($consult['exec']) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $newCurse = base64_decode($course);
                     $records->create($idDirective, "El directivo @$usernameDirective creo un nuevo registro para $newCurse", 2, "Creación de registro", "Asistencia");
                     return $responses->goodData($consult['connection']->insert_id);
@@ -63,7 +63,7 @@
                     }
                     $dataNotify = base64_encode(serialize($dataNotify));
                     $db->Query("INSERT INTO `notifications`(`id`, `datas`) VALUES (NULL, '$dataNotify')");
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $getActualData = $getActualData->fetch_array();
                     if ($getActualData['status'] == "1") $records->create($idDirective, "El directivo @$usernameDirective edito el registro #$idGroup.", 1, "Edicion de registro", "Asistencia"); else $records->create($idDirective, "El directivo @$usernameDirective confirmo el registro #$idGroup.", 1, "Confirmación de registro", "Asistencia");
                     return $responses->good;
@@ -140,7 +140,7 @@
                 if ($consult) {
                     $consult2 = $db->Query("DELETE FROM `groups` WHERE `id`=$idGroup");
                     if ($consult2) {
-                        $usernameDirective = $directive->getData_system($idDirective)['username'];
+                        $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                         $records->create($idDirective, "El directivo @$usernameDirective borro el registro #$idGroup", 1, "Borrar registro", "Asistencia");
                         return $responses->good;
                     }

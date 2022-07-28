@@ -26,10 +26,10 @@
                     return array(
                         'id' => $data['id'],
                         'movent' => $data['movent'],
-                        'data' => $data['data'],
+                        'date' => $data['date'],
                         'hour' => $data['hour'],
                         'importance' => $data['importance'],
-                        'idAdmin' => $directives->getData_system($data['idAdmin']),
+                        'admin' => $directives->getData_system($data['idAdmin']),
                         'type' => $data['type'],
                         'section' => $data['section']
                     );
@@ -57,15 +57,15 @@
                         array_push($datas, array(
                             'id' => $data['id'],
                             'movent' => $data['movent'],
-                            'data' => $data['data'],
+                            'date' => $data['date'],
                             'hour' => $data['hour'],
                             'importance' => $data['importance'],
-                            'idAdmin' => $directives->getData_system($data['idAdmin']),
+                            'admin' => $directives->getData_system($data['idAdmin']),
                             'type' => $data['type'],
                             'section' => $data['section']
                         ));
                     }
-                    return $responses->goodData($datas);
+                    return $responses->goodData(array_reverse($datas));
                 }
                 return $responses->error2;
             } catch (\Throwable $th) {

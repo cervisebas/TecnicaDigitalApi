@@ -22,7 +22,7 @@
                 if ($verifyData->issetDataPost(array('email'))) $email = $_POST['email'];
                 $consult = $db->Query("INSERT INTO `students`(`id`, `name`, `dni`, `curse`, `tel`, `email`, `date`, `picture`) VALUES (NULL, '$name', '$dni', '$curse', '$tel', '$email', '$date', '$image')");
                 if ($consult) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $records->create($idDirective, "El directivo @$usernameDirective añadió un nuevo estudiante.", 2, "Añadir estudiante", "Estudiantes");
                     return $responses->good;
                 }
@@ -45,7 +45,7 @@
                 /* ################################################## */
                 $consult = $db->Query("DELETE FROM `students` WHERE `id`=$idStudent");
                 if ($consult) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $records->create($idDirective, "El directivo @$usernameDirective elimino el estudiante #$idStudent.", 1, "Borrar estudiante", "Estudiantes");
                     return $responses->good;
                 }
@@ -81,7 +81,7 @@
                 }
                 $consult = $db->Query("UPDATE `students` SET $edit WHERE `id`=$idStudent");
                 if ($consult) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $records->create($idDirective, "El directivo @$usernameDirective edito la información del estudiante #$idStudent.", 1, "Editar estudiante", "Estudiantes");
                     return $responses->good;
                 }

@@ -18,7 +18,7 @@
                 $hour = date("H:i");
                 $consult = $db->Query("INSERT INTO `annotations`(`id`, `id_group`, `id_directive`, `date`, `hour`, `note`) VALUES (NULL, $idGroup, $idDirective, '$date', '$hour', '$note')");
                 if ($consult) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $records->create($idDirective, "El directivo @$usernameDirective añadió una nota en el registro #$idGroup.", 3, "Creación de anotación", "Anotaciones");
                     return $responses->good;
                 }
@@ -42,7 +42,7 @@
                 $getData = $db->Query("SELECT * FROM `annotations` WHERE `id`=$idAnnotation");
                 $consult = $db->Query("DELETE FROM `annotations` WHERE `id`=$idAnnotation");
                 if ($consult) {
-                    $usernameDirective = $directive->getData_system($idDirective)['username'];
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $idGroup = $getData->fetch_array()['id_group'];
                     $records->create($idDirective, "El directivo @$usernameDirective borro una nota en el registro #$idGroup.", 3, "Borrado de anotación", "Anotaciones");
                     return $responses->good;
