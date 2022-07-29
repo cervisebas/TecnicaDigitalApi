@@ -192,6 +192,13 @@
         public function getData_system($idDirective) {
             $responses = new Responses();
             try {
+                if ($idDirective == -69 || $idDirective == '-69') return $responses->goodData(array(
+                    'id' => 'TC',
+                    'name' => base64_encode('Técnica Consola'),
+                    'position' => base64_encode('Consola'),
+                    'username' => base64_encode('console-tecnica'),
+                    'picture' => base64_encode('console.png')
+                ));
                 $db = new DBSystem();
                 $default = array(
                     'id' => '-1',

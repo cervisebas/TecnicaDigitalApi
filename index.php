@@ -384,6 +384,20 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['setConsoleListAssist'])) {
+        if ($verifyData->issetDataPost(array('keyAccess', 'dateAccess', 'data'))) {
+            $verify = $console->verify($_POST['keyAccess'], $_POST['dateAccess']);
+            if (is_object($verify)) {
+                echo json_encode($verify);
+                return;
+            }
+            $set = $assist->setDataFromConsole($_POST['data']);
+            echo json_encode($set);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
 
     echo json_encode($responses->errorNoPost);
 ?>

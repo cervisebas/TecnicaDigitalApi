@@ -302,5 +302,50 @@
                 return $responses->error1;
             }
         }
+
+        // Console
+        public function setDataFromConsole($data_string) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $datas = json_decode(base64_decode($data_string), true);
+                $records = new RecordSystem();
+                $return = 0;
+                foreach ($datas as &$value) {
+                    $data_curse = $value["curse"];
+                    $data_hour = $value["hour"];
+                    $data_date = $value["date"];
+                    $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$data_curse' AND `date`='$data_date' AND `hour`='$data_hour'");
+                    if ($consult) {
+                        if ($consult->num_rows == 0) {
+                            $consult2 = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$data_curse', '$data_date', '$data_hour', '0')");
+                            if ($consult2['exec']) {
+                                $idGroup = $consult2['connection']->insert_id;
+                                $lines = "";
+                                foreach ($value['list'] as &$value2) {
+                                    $c = (strlen($lines) == 0)? "": ", ";
+                                    $time = $value2['hour'];
+                                    $idStudent = $value2['id'];
+                                    $lines = $lines.$c."(NULL, $idStudent, $idGroup, '$time', '1', '1')";
+                                }
+                                $consult3 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES $lines");
+                                if ($consult3) $return += 1;
+                            }
+                        } else {
+                            $return += 1;
+                        }
+                    }
+                }
+                if ($return !== 0) {
+                    $count = count($datas);
+                    $tag = ($count == 1)? "curso": "cursos";
+                    $records->create("-69", "La consola sincronizo la asistencia de $count $tag.", 2, "Sincronización de la consola.", "Asistencia");
+                    return $responses->good;
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->errorTypical;
+            }
+        }
     }
 ?>
