@@ -8,6 +8,11 @@
             $notification = array("title" => $title, "body" => $body);
             $firebase->send($notification, "/topics/student-$idStudent", false);
         }
+        public function send2(string $to, string $title, string $body) {
+            $firebase = new FirebaseMessagingSystem();
+            $notification = array("title" => $title, "body" => $body);
+            $firebase->send($notification, "/topics/$to", false);
+        }
         public function multiSend($datas) {
             $firebase = new FirebaseMessagingSystem();
             $notifications = array();

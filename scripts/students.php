@@ -12,7 +12,7 @@
                 $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
@@ -39,7 +39,7 @@
                 $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
@@ -62,7 +62,7 @@
                 $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
@@ -96,7 +96,7 @@
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */

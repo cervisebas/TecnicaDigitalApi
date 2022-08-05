@@ -10,9 +10,12 @@
                 $directive = new DirectiveSystem();
                 $records = new RecordSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
+                /* ###############   Verify   ####################### */
+                $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$course' AND `date`='$date' AND `hour`='$hour'");
+                if ($consult) if (!$consult->num_rows == 0) return $responses->errorData("Ya existe un registro similar.");
                 /* ################################################## */
                 $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$hour', '0')");
                 if ($consult['exec']) {
@@ -34,10 +37,12 @@
                 $directive = new DirectiveSystem();
                 $records = new RecordSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
+                $notify = true;
+                if (isset($_POST['notify'])) $notify = ($_POST['notify'] == '1');
                 $lines = "";
                 foreach ($datas as &$value) {
                     $c = (strlen($lines) == 0)? "": ", ";
@@ -51,18 +56,20 @@
                 $getActualData = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
                 $consult2 = $db->Query("UPDATE `groups` SET `status`='1' WHERE `id`=$idGroup");
                 if ($consult && $consult2) {
-                    $dataNotify = array();
-                    foreach ($datas as &$value) {
-                        $hashId = "";
-                        for ($i=0; $i < 5 - strlen($value['idStudent']); $i++) {  $hashId = $hashId."0"; }
-                        $hashId = $hashId.$value['idStudent'];
-                        $title = "Se registro la asistencia del alumno #$hashId";
-                        $date = date("d/m/Y");
-                        $body = (strval($value['check']) == "1")? "El alumno estuvo presente el día $date.": "El alumno estuvo ausente el día $date.";
-                        array_push($dataNotify, array('to' => $value['idStudent'], 'title' => $title, 'body' => $body));
+                    if ($notify) {
+                        $dataNotify = array();
+                        foreach ($datas as &$value) {
+                            $hashId = "";
+                            for ($i=0; $i < 5 - strlen($value['idStudent']); $i++) {  $hashId = $hashId."0"; }
+                            $hashId = $hashId.$value['idStudent'];
+                            $title = "Se registro la asistencia del alumno #$hashId";
+                            $date = date("d/m/Y");
+                            $body = (strval($value['check']) == "1")? "El alumno estuvo presente el día $date.": "El alumno estuvo ausente el día $date.";
+                            array_push($dataNotify, array('to' => $value['idStudent'], 'title' => $title, 'body' => $body));
+                        }
+                        $dataNotify = base64_encode(serialize($dataNotify));
+                        $db->Query("INSERT INTO `notifications`(`id`, `datas`) VALUES (NULL, '$dataNotify')");
                     }
-                    $dataNotify = base64_encode(serialize($dataNotify));
-                    $db->Query("INSERT INTO `notifications`(`id`, `datas`) VALUES (NULL, '$dataNotify')");
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $getActualData = $getActualData->fetch_array();
                     if ($getActualData['status'] == "1") $records->create($idDirective, "El directivo @$usernameDirective edito el registro #$idGroup.", 1, "Edicion de registro", "Asistencia"); else $records->create($idDirective, "El directivo @$usernameDirective confirmo el registro #$idGroup.", 1, "Confirmación de registro", "Asistencia");
@@ -132,7 +139,7 @@
                 $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 1);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
@@ -197,6 +204,12 @@
             $consult = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
             $datas = $consult->fetch_array();
             return $datas['date'];
+        }
+        public function system_getstatus($idGroup) {
+            $db = new DBSystem();
+            $consult = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
+            $datas = $consult->fetch_array();
+            return $datas['status'];
         }
         public function system_findStudent($idStudent, $idGroup) {
             $error = array('ok' => false, 'id_assist' => -1, 'hour' => base64_encode('No disponible'), 'credential' => false);
@@ -278,13 +291,16 @@
                     $result = array();
                     while ($assist = $consult->fetch_array()) {
                         $date = $this->system_getdate($assist['id_group']);
-                        array_push($result, array(
-                            'id' => $assist['id'],
-                            'date' => $date,
-                            'hour' => $assist['hour'],
-                            'status' => ($assist['status'] == '1'),
-                            'credential' => ($assist['credential'] == "1")
-                        ));
+                        $statusGroup = $this->system_getstatus($assist['id_group']);
+                        if ($statusGroup == "1") {
+                            array_push($result, array(
+                                'id' => $assist['id'],
+                                'date' => $date,
+                                'hour' => $assist['hour'],
+                                'status' => ($assist['status'] == '1'),
+                                'credential' => ($assist['credential'] == "1")
+                            ));
+                        }
                     }
                     usort($result, function($a, $b) {
                         $e1 = explode("/", base64_decode($a["date"]));
@@ -310,6 +326,7 @@
                 $db = new DBSystem();
                 $datas = json_decode(base64_decode($data_string), true);
                 $records = new RecordSystem();
+                $notify = new NotificationSystem();
                 $return = 0;
                 foreach ($datas as &$value) {
                     $data_curse = $value["curse"];
@@ -340,6 +357,9 @@
                     $count = count($datas);
                     $tag = ($count == 1)? "curso": "cursos";
                     $records->create("-69", "La consola sincronizo la asistencia de $count $tag.", 2, "Sincronización de la consola.", "Asistencia");
+                    $l1 = ($count == 1)? "registro": "registros";
+                    $l2 = ($count == 1)? "listo": "listos";
+                    $notify->send("directives", "Ya están listos los registros de asistencia.", "La consola ya envió $count $l1 de asistencia $l2 para confirmar.", "");
                     return $responses->good;
                 }
                 return $responses->error2;

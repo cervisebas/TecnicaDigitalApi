@@ -25,41 +25,6 @@
                 return false;
             }
         }
-        /*public function multiplePost($notifications) {
-            try {
-                $datas = array();
-                $headers = array("Content-Type:application/json", "Authorization:key=$this->server_key");
-                foreach ($notifications as &$notif) {
-                    array_push($datas, array("notification" => $notif['notification'], "to" => $notif['to']));
-                }
-                
-                $curls = array();
-                $mh = curl_multi_init();
-                $active = null;
-                
-                foreach ($datas as $index => $data) {
-                    $curls[$index] = curl_init();
-                    curl_setopt($curls[$index], CURLOPT_URL, "https://fcm.googleapis.com/fcm/send");
-                    curl_setopt($curls[$index], CURLOPT_POST, true);
-                    curl_setopt($curls[$index], CURLOPT_HTTPHEADER, $headers);
-                    curl_setopt($curls[$index], CURLOPT_RETURNTRANSFER, true);
-                    curl_setopt($curls[$index], CURLOPT_POSTFIELDS, $data);
-                    curl_multi_add_handle($mh, $curls[$index]);
-                }
-
-                do {
-                    curl_multi_exec($mh, $active);
-                } while ($active);
-
-                foreach ($curls as &$curl) {
-                    curl_multi_remove_handle($mh, $curl);
-                }
-
-                curl_multi_close($mh);
-            } catch (\Throwable $th) {
-                return false;
-            }
-        }*/
         public function multiplePost($notifications) {
             try {
                 $headers = array("Content-Type:application/json", "Authorization:key=$this->server_key");

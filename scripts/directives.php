@@ -11,7 +11,11 @@
                 $verifyData = new VerifyData();
                 $fileSystem = new FileSystem();
                 /* ################################################## */
-                $verify = $permissions->verify($idDirective, 4);
+                $verify = $permissions->verify($idDirective, 3);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $verify = $permissions->verify($idDirective, (int) $permissionLevel);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
@@ -38,7 +42,7 @@
                 $records = new RecordSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 4);
+                $verify = $permission->verify($idDirective, 3);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
@@ -155,7 +159,7 @@
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
                 /* ################################################## */
-                $verify = $permission->verify($idDirective, 4);
+                $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
