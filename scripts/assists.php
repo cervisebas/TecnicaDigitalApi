@@ -42,7 +42,25 @@
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
                 $notify = true;
+                $isFilter = false;
                 if (isset($_POST['notify'])) $notify = ($_POST['notify'] == '1');
+                if (isset($_POST['isFilter'])) $isFilter = ($_POST['isFilter'] == '1');
+                if ($isFilter) {
+                    $getActualData = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
+                    $getActualData = $getActualData->fetch_array();
+                    if ($getActualData['status'] == "1")  {
+                        $consult = $db->Query("SELECT * FROM `assists` WHERE `id_group`=$idGroup");
+                        $idsRemove = "";
+                        while ($datas_assit = $consult->fetch_array()) {
+                            $find = false;
+                            foreach ($datas as &$value) {
+                                $find = ($value['idStudent'] == $datas_assit['id_student']);
+                            }
+                            if (!$find) $idsRemove = $idsRemove.((strlen($idsRemove) !== 0)? ", ": "").$datas_assit['id'];
+                        }
+                        $db->Query("DELETE FROM `assists` WHERE `id` IN ($idsRemove)");
+                    }
+                }
                 $lines = "";
                 foreach ($datas as &$value) {
                     $c = (strlen($lines) == 0)? "": ", ";

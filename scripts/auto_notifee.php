@@ -15,7 +15,7 @@
             while ($data = $consult->fetch_array()) {
                 $notify = unserialize(base64_decode($data['datas']));
                 $notification->multiSend($notify);
-                $ids = ((strlen($ids) == 0)? "": ", ").$data['id'];
+                $ids = $ids.((strlen($ids) == 0)? "": ", ").$data['id'];
             }
             $db->Query("DELETE FROM `notifications` WHERE `id` IN ($ids)");
             echo "true";

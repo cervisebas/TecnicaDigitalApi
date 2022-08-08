@@ -14,4 +14,5 @@
     include_once 'firebase_messaging.php';
     include_once 'notifications.php';
     include_once 'records.php';
+    include_once 'curses_groups.php';
 ?>

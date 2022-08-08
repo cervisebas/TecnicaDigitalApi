@@ -34,6 +34,7 @@
     $console = new ConsoleSystem();
     $annotations = new AnnotationSystem();
     $records = new RecordSystem();
+    $cursesGroup = new CursesGroupSystem();
     
     # **************************** Only Students And Family ********************************
     if (isset($_POST['family_login'])) {
@@ -371,6 +372,74 @@
             }
             $get = $records->getAll($idDirective);
             echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    // Curses Groups
+    if (isset($_POST['getAllCursesGroups'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $cursesGroup->getAll($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['editCurseGroup'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idEdit')) && $verifyData->issetPosts(array('curse', 'group', 'students'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $edit = $cursesGroup->modify(
+                $idDirective,
+                $_POST['idEdit'],
+                $_POST['curse'],
+                $_POST['group'],
+                $_POST['students']
+            );
+            echo json_encode($edit);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['addCurseGroup'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'curse', 'group', 'students'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $set = $cursesGroup->create(
+                $idDirective,
+                $_POST['curse'],
+                $_POST['group'],
+                $_POST['students']
+            );
+            echo json_encode($set);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['deleteCurseGroup'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idGroup'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $delete = $cursesGroup->delete($idDirective, $_POST['idGroup']);
+            echo json_encode($delete);
             return;
         }
         echo json_encode($responses->errorTypical);
