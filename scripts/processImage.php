@@ -1,5 +1,5 @@
 <?php
-    include_once './libs/WideImage/WideImage.php';
+    include_once 'libs/WideImage/WideImage.php';
 
     class ProcessImageSystem {
         public function process3($file, $w, $h) {
