@@ -22,6 +22,7 @@
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $newCurse = base64_decode($course);
                     $records->create($idDirective, "El directivo @$usernameDirective creo un nuevo registro para $newCurse", 2, "Creación de registro", "Asistencia");
+                    $consult['connection']->close();
                     return $responses->goodData($consult['connection']->insert_id);
                 }
                 return $responses->error2;
