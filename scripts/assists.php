@@ -273,6 +273,13 @@
             try {
                 $db = new DBSystem();
                 $students = new StudentSystem();
+                /* ################################################## */
+                function orderStudents($data1, $data2) {
+                    $name1 = normalizeChars(base64_decode($data1['name']));
+                    $name2 = normalizeChars(base64_decode($data2['name']));
+                    return $name1 > $name2;
+                }
+                /* ################################################## */
                 $consult = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
                 if ($consult) {
                     $dataGroup = $consult->fetch_array();
@@ -291,6 +298,7 @@
                             'time' => $status['hour']
                         ));
                     }
+                    usort($result, "orderStudents");
                     return $responses->goodData($result);
                 }
                 return $responses->error2;
