@@ -16,7 +16,7 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $image =  base64_encode('default.png');
+                $image = base64_encode('default.png');
                 if ($verifyData->issetFilePost('image')) $image = base64_encode($fileSystem->createStudentImage2($_FILES['image']));
                 $email = '';
                 if ($verifyData->issetDataPost(array('email'))) $email = $_POST['email'];
@@ -77,6 +77,10 @@
                 (!$verifyData->is_empty($email)) && $edit = $edit.((strlen($edit) != 0)? ",": "")."`email`='$email'";
                 if ($verifyData->issetFilePost('image')) {
                     $image = base64_encode($fileSystem->createStudentImage2($_FILES['image']));
+                    $edit = $edit.((strlen($edit) != 0)? ",": "")."`picture`='$image'";
+                }
+                if (!$verifyData->issetFilePost('image') && $verifyData->issetPosts(array('isRemoveImage'))) {
+                    $image = base64_encode('default.png');
                     $edit = $edit.((strlen($edit) != 0)? ",": "")."`picture`='$image'";
                 }
                 $consult = $db->Query("UPDATE `students` SET $edit WHERE `id`=$idStudent");
