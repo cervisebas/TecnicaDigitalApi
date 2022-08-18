@@ -5,3 +5,4 @@ tmp_files/**
 !image/default-admin.png
 !image/default-admin-bad.png
 !image/get.php
+scripts/SecurityKeyCodes.php

@@ -21,7 +21,13 @@
     $responses = new Responses();
 
     $verifySecure = $verifyData->verifyHeaders();
-    if ($verifySecure) $isAdmin = $verifySecure['admin'];
+    if ($verifySecure) {
+        if (!$verifySecure['ok']) {
+            echo json_encode($verifySecure);
+            return;
+        }
+        $isAdmin = $verifySecure['admin'];
+    }
     if (!$verifySecure) {
         echo $responses->errorHeader;
         return;
@@ -76,7 +82,7 @@
     }
 
     if (!$isAdmin) {
-        echo $responses->errorNoPost;
+        echo json_encode($responses->errorNoPost);
         return;
     }
     # **************************** ************************ ********************************
