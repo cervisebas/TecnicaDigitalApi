@@ -1,6 +1,6 @@
 <?php
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, "https://tecnica-digital.ga/scripts/auto_notifee.php");
+    curl_setopt($ch, CURLOPT_URL, "https://tecnicadigital.com.ar/scripts/auto_notifee.php");
     curl_setopt($ch, CURLOPT_TIMEOUT, 120000);
     curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 120000);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
