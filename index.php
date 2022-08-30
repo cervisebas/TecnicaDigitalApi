@@ -29,7 +29,7 @@
         $isAdmin = $verifySecure['admin'];
     }
     if (!$verifySecure) {
-        echo $responses->errorHeader;
+        echo json_encode($responses->errorHeader);
         return;
     }
 
