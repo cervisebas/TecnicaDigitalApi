@@ -16,6 +16,8 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
+                if (base64_decode($curse) == "Profesor/a") return $responses->errorIncompatible;
+                /* ################################################## */
                 $image = base64_encode('default.png');
                 if ($verifyData->issetFilePost('image')) $image = base64_encode($fileSystem->createStudentImage2($_FILES['image']));
                 $email = '';
@@ -68,6 +70,9 @@
                 /* ################################################## */
                 $verifyData = new VerifyData();
                 $fileSystem = new FileSystem();
+                /* ################################################## */
+                if (!$verifyData->is_empty($curse)) if (base64_decode($curse) == "Profesor/a") return $responses->errorIncompatible;
+                /* ################################################## */
                 $edit = "";
                 (!$verifyData->is_empty($name)) && $edit = $edit."`name`='$name'";
                 (!$verifyData->is_empty($dni)) && $edit = $edit.((strlen($edit) != 0)? ",": "")."`dni`='$dni'";
