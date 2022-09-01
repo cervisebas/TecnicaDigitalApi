@@ -41,6 +41,7 @@
     $annotations = new AnnotationSystem();
     $records = new RecordSystem();
     $cursesGroup = new CursesGroupSystem();
+    $preferences = new DirectivesPreferencesSystem();
     
     # **************************** Only Students And Family ********************************
     if (isset($_POST['family_login'])) {
@@ -362,6 +363,40 @@
             }
             $delete = $directives->delete($idDirective, $_POST['idDirective']);
             echo json_encode($delete);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+
+    // Preferences
+    if (isset($_POST['getPreferencesDirective'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $preferences->get($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['updatePreferencesDirective'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'date', 'datas'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $update = $preferences->updateNow(
+                $idDirective,
+                $_POST['date'],
+                $_POST['datas']
+            );
+            echo json_encode($update);
             return;
         }
         echo json_encode($responses->errorTypical);
