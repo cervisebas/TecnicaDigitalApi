@@ -22,6 +22,12 @@
                 if ($verifyData->issetFilePost('image')) $image = base64_encode($fileSystem->createStudentImage2($_FILES['image']));
                 $email = '';
                 if ($verifyData->issetDataPost(array('email'))) $email = $_POST['email'];
+
+                // Check Teacher
+                if (strpos(strtolower(base64_decode($curse)), "docente") !== false || strpos(strtolower(base64_decode($curse)), "profesor") !== false) {
+                    if (strlen($email) == 0) return $responses->errorNotData;
+                }
+
                 $consult = $db->Query("INSERT INTO `students`(`id`, `name`, `dni`, `curse`, `tel`, `email`, `date`, `picture`) VALUES (NULL, '$name', '$dni', '$curse', '$tel', '$email', '$date', '$image')");
                 if ($consult) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
@@ -79,7 +85,16 @@
                 (!$verifyData->is_empty($curse)) && $edit = $edit.((strlen($edit) != 0)? ",": "")."`curse`='$curse'";
                 (!$verifyData->is_empty($tel)) && $edit = $edit.((strlen($edit) != 0)? ",": "")."`tel`='$tel'";
                 (!$verifyData->is_empty($date)) && $edit = $edit.((strlen($edit) != 0)? ",": "")."`date`='$date'";
-                (!$verifyData->is_empty($email)) && $edit = $edit.((strlen($edit) != 0)? ",": "")."`email`='$email'";
+                if (!$verifyData->is_empty($email)) {
+                    if ($email == "rm-now")
+                        $edit = $edit.((strlen($edit) != 0)? ",": "")."`email`=''";
+                    else
+                        $edit = $edit.((strlen($edit) != 0)? ",": "")."`email`='$email'";
+                }
+                if (strpos(strtolower(base64_decode(strval($curse))), "docente") !== false || strpos(strtolower(base64_decode(strval($curse))), "profesor") !== false) {
+                    if (strlen($email) == 0) return $responses->errorNotData;
+                    if ($email == "rm-now") return $responses->errorNotData;
+                }
                 if ($verifyData->issetFilePost('image')) {
                     $image = base64_encode($fileSystem->createStudentImage2($_FILES['image']));
                     $edit = $edit.((strlen($edit) != 0)? ",": "")."`picture`='$image'";

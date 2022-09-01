@@ -17,6 +17,7 @@
 
         public $errorUpdate = array('ok' => false, 'cause' => 'La versión de la aplicación que está ejecutando es antigua.', 'datas' => 'alert');
         public $errorIncompatible = array('ok' => false, 'cause' => 'Función incompatible o no implementada.', 'datas' => 'alert');
+        public $errorNotData = array('ok' => false, 'cause' => 'Faltan datos a ingresar, por favor revise los datos ingresados.');
         
         public function goodData($data) {
             return array('ok' => true, 'cause' => '', 'datas' => $data);
