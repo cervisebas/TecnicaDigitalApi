@@ -6,3 +6,4 @@ tmp_files/**
 !image/default-admin-bad.png
 !image/get.php
 scripts/SecurityKeyCodes.php
+build

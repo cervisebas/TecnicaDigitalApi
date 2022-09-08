@@ -16,4 +16,5 @@
     include_once 'records.php';
     include_once 'curses_groups.php';
     include_once 'directives_preferences.php';
+    include_once 'schedule.php';
 ?>

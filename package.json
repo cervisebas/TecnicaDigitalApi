@@ -2,12 +2,15 @@
   "name": "TecnicaDigitalApi",
   "version": "1.0.0",
   "scripts": {
-    "sync": "node sync-git.js"
+    "sync": "node sync-git.js",
+    "build": "node gulpfile.js"
   },
   "repository": "https://github.com/cervisebas/TecnicaDigitalApi.git",
   "author": "Sebastian Cerviño <cervisebas@gmail.com>",
   "license": "MIT",
   "dependencies": {
+    "@cedx/gulp-php-minify": "^12.0.0",
+    "gulp": "^4.0.2",
     "shelljs": "^0.8.5"
   }
 }

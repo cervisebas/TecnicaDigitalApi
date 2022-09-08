@@ -41,6 +41,7 @@
     $annotations = new AnnotationSystem();
     $records = new RecordSystem();
     $cursesGroup = new CursesGroupSystem();
+    $schedule = new ScheduleSystem();
     $preferences = new DirectivesPreferencesSystem();
     
     # **************************** Only Students And Family ********************************
@@ -403,6 +404,26 @@
         return;
     }
 
+    // Schedule
+    if (isset($_POST['addSchedule'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'curse', 'data'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $set = $schedule->create(
+                $idDirective,
+                $_POST['curse'],
+                $_POST['data']
+            );
+            echo json_encode($set);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+
     // Records
     if (isset($_POST['getRecords'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
@@ -418,6 +439,7 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+
     // Curses Groups
     if (isset($_POST['getAllCursesGroups'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
