@@ -1,8 +1,8 @@
 <?php
     include_once 'classes.php';
 
-    class ScheduleSystem {
-        public function create($idDirective, string $curse, string $data) {
+    class MatterSheduleSystem {
+        public function create($idDirective, $idTeacher, string $name) {
             $responses = new Responses();
             try {
                 $db = new DBSystem();
@@ -14,13 +14,10 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $isExist = $this->isExist($curse);
-                if ($isExist) return $responses->errorScheduleRepeat;
-                /* ################################################## */
-                $consult = $db->Query("INSERT INTO `schedule`(`id`, `curse`, `data`) VALUES (NULL, '$curse', '$data')");
+                $consult = $db->Query("INSERT INTO `matters`(`id`, `id_teacher`, `name`) VALUES (NULL, $idTeacher, '$name')");
                 if ($consult) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
-                    $records->create($idDirective, "El directivo @$usernameDirective creo un nuevo horario.", 2, "Añadir horario", "Horarios");
+                    $records->create($idDirective, "El directivo @$usernameDirective añadio una nueva materia.", 2, "Añadir materia", "Materias");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -28,7 +25,7 @@
                 return $responses->error1;
             }
         }
-        public function delete($idDirective, string $idSchedule) {
+        public function delete($idDirective, string $idMatter) {
             $responses = new Responses();
             try {
                 $db = new DBSystem();
@@ -40,10 +37,10 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $consult = $db->Query("DELETE FROM `schedule` WHERE `id`=$idSchedule");
+                $consult = $db->Query("DELETE FROM `matters` WHERE `id`=$idMatter");
                 if ($consult) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
-                    $records->create($idDirective, "El directivo @$usernameDirective elimino el horario #$idSchedule.", 1, "Borrar horario", "Horarios");
+                    $records->create($idDirective, "El directivo @$usernameDirective elimino la materia #$idMatter.", 1, "Borrar materia", "Materias");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -51,7 +48,7 @@
                 return $responses->error1;
             }
         }
-        public function modify($idDirective, $idSchedule, string $data) {
+        public function modify($idDirective, $idMatter, $idTeacher, string $name) {
             $responses = new Responses();
             try {
                 $db = new DBSystem();
@@ -63,10 +60,10 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $consult = $db->Query("UPDATE `schedule` SET `data`='$data' WHERE `id`=$idSchedule");
+                $consult = $db->Query("UPDATE `matters` SET `id_teacher`=$idTeacher, `name`='$name' WHERE `id`=$idMatter");
                 if ($consult) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
-                    $records->create($idDirective, "El directivo @$usernameDirective edito el horario #$idSchedule.", 1, "Editar horario", "Horarios");
+                    $records->create($idDirective, "El directivo @$usernameDirective edito la materia #$idMatter.", 1, "Editar materia", "Materias");
                     return $responses->good;
                 }
                 return $responses->error2;
@@ -74,15 +71,36 @@
                 return $responses->error1;
             }
         }
-        private function isExist(string $curse): bool {
+        public function get_system($idMatter) {
+            $responses = new Responses();
             try {
                 $db = new DBSystem();
+                $students = new StudentSystem();
                 /* ################################################## */
-                $consult = $db->Query("SELECT * FROM `schedule` WHERE `curse`='$curse'");
-                if ($consult) return $consult->num_rows == 0;
-                return false;
+                $consult = $db->Query("SELECT * FROM `matters` WHERE `id`=$idMatter");
+                if ($consult) {
+                    $schedule = $consult->fetch_array();
+                    $teacher = array(
+                        'id' => -1,
+                        'name' => base64_encode("Desconocido"),
+                        'dni' => base64_encode("00000000"),
+                        'curse' => base64_encode("Docente"),
+                        'tel' => base64_encode("0000000000"),
+                        'email' => base64_encode("desconocido@email.com"),
+                        'date' => base64_encode("00/00/0000"),
+                        'picture' => base64_encode("default.php"),
+                    );
+                    $dataStudent = $students->get_system($schedule['id_teacher']);
+                    if ($dataStudent['ok']) $teacher = $dataStudent['datas'];
+                    return $responses->goodData(array(
+                        'id' => $schedule['id'],
+                        'teacher' => $teacher,
+                        'name' => $schedule['name']
+                    ));
+                }
+                return $responses->error2;
             } catch (\Throwable $th) {
-                return false;
+                return $responses->error1;
             }
         }
         public function getAll($idDirective) {
@@ -90,19 +108,32 @@
             try {
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
+                $students = new StudentSystem();
                 /* ################################################## */
                 $verify = $permission->verify($idDirective, 1);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $consult = $db->Query("SELECT * FROM `schedule`");
+                $consult = $db->Query("SELECT * FROM `matters`");
                 if ($consult) {
                     $data = array();
                     while ($schedule = $consult->fetch_array()) {
+                        $teacher = array(
+                            'id' => -1,
+                            'name' => base64_encode("Desconocido"),
+                            'dni' => base64_encode("00000000"),
+                            'curse' => base64_encode("Docente"),
+                            'tel' => base64_encode("0000000000"),
+                            'email' => base64_encode("desconocido@email.com"),
+                            'date' => base64_encode("00/00/0000"),
+                            'picture' => base64_encode("default.php"),
+                        );
+                        $dataStudent = $students->get_system($schedule['id_teacher']);
+                        if ($dataStudent['ok']) $teacher = $dataStudent['datas'];
                         array_push($data, array(
                             'id' => $schedule['id'],
-                            'curse' => $schedule['curse'],
-                            'data' => $this->processData($schedule['data'])
+                            'teacher' => $teacher,
+                            'name' => $schedule['name']
                         ));
                     }
                     return $responses->goodData($data);
@@ -111,38 +142,6 @@
             } catch (\Throwable $th) {
                 return $responses->error1;
             }
-        }
-        public function get($curse) {
-            $responses = new Responses();
-            try {
-                $db = new DBSystem();
-                /* ################################################## */
-                $consult = $db->Query("SELECT * FROM `schedule` WHERE `curse`='$curse'");
-                if ($consult) {
-                    $schedule = $consult->fetch_array();
-                    return $responses->goodData(array(
-                        'id' => $schedule['id'],
-                        'curse' => $schedule['curse'],
-                        'data' => $this->processData($schedule['data'])
-                    ));
-                }
-                return $responses->error2;
-            } catch (\Throwable $th) {
-                return $responses->error1;
-            }
-        }
-        public function processData(string $data) {
-            $matters = new MatterSheduleSystem();
-            $process_data = json_decode(base64_decode($data));
-            $result = array();
-            foreach ($process_data as $key => $value) {
-                array_push($result, array(
-                    'hour' => $value['hour'],
-                    'group' => $value['group'],
-                    'matter' => $matters->get_system($value['id_matter'])
-                ));
-            }
-            return $result;
         }
     }
     

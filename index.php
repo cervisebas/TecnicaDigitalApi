@@ -41,6 +41,7 @@
     $annotations = new AnnotationSystem();
     $records = new RecordSystem();
     $cursesGroup = new CursesGroupSystem();
+    $matters = new MatterSheduleSystem();
     $schedule = new ScheduleSystem();
     $preferences = new DirectivesPreferencesSystem();
     
@@ -423,6 +424,83 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['getAllSchedules'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $cursesGroup->getAll($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['deleteSchedule'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idSchedule'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $delete = $schedule->delete($idDirective, $_POST['idSchedule']);
+            echo json_encode($delete);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+
+    // Matters
+    if (isset($_POST['addMatters'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idTeacher', 'name'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $set = $matters->create(
+                $idDirective,
+                $_POST['idTeacher'],
+                $_POST['name']
+            );
+            echo json_encode($set);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['getAllMatters'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $matters->getAll($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['deleteMatter'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idTeacher'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $delete = $matters->delete($idDirective, $_POST['idTeacher']);
+            echo json_encode($delete);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    
 
     // Records
     if (isset($_POST['getRecords'])) {

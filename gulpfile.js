@@ -3,12 +3,15 @@ import phpMinify from "@cedx/gulp-php-minify";
 import fs from "fs";
 import path from "path";
 
+
+
 const assets = [
     './image/default.png',
     './image/default-admin.png',
     './image/default-admin-bad.png',
     './image/console.png'
 ];
+const nodb = process.argv.slice(2).find((v)=>v.indexOf("--nodb") !== -1) !== undefined;
 
 function wait(time) {
     return new Promise((resolve)=>setTimeout(resolve, time));
@@ -34,6 +37,7 @@ function compressPhp() {
         "!libs/**/*.php",
         "!build/**/*.php"
     ];
+    if (nodb) dirs.push("!scripts/database.php");
     return gulp.src(dirs, { read: false })
         .pipe(phpMinify({ binary: "C:\\xampp\\php\\php.exe" }))
         //.pipe(phpMinify({ mode: "safe" }))
