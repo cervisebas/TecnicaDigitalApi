@@ -101,8 +101,9 @@
 		 */
 		static function checkGD()
 		{
-			if (!extension_loaded('gd'))
-				throw new WideImage_Exception("WideImage requires the GD extension, but it's apparently not loaded.");
+			// Sin errores >:c
+			/*if (!extension_loaded('gd'))
+				throw new WideImage_Exception("WideImage requires the GD extension, but it's apparently not loaded.");*/
 		}
 		
 		/**

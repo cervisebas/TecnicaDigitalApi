@@ -1,6 +1,7 @@
 node_modules
 image/**
 tmp_files/**
+!image/console.png
 !image/default.png
 !image/default-admin.png
 !image/default-admin-bad.png

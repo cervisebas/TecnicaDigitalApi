@@ -5,6 +5,7 @@
     "sync": "node sync-git.js",
     "build": "node gulpfile.js"
   },
+  "type": "module",
   "repository": "https://github.com/cervisebas/TecnicaDigitalApi.git",
   "author": "Sebastian Cerviño <cervisebas@gmail.com>",
   "license": "MIT",
