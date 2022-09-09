@@ -454,7 +454,7 @@
     }
 
     // Matters
-    if (isset($_POST['addMatters'])) {
+    if (isset($_POST['addMatter'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idTeacher', 'name'))) {
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
@@ -487,13 +487,13 @@
         return;
     }
     if (isset($_POST['deleteMatter'])) {
-        if ($verifyData->issetDataPost(array('username', 'password', 'idTeacher'))) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idMatter'))) {
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
                 return;
             }
-            $delete = $matters->delete($idDirective, $_POST['idTeacher']);
+            $delete = $matters->delete($idDirective, $_POST['idMatter']);
             echo json_encode($delete);
             return;
         }

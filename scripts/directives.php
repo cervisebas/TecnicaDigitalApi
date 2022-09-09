@@ -184,12 +184,23 @@
                         ));
                     }
                     usort($result, "orderDirectives");
+                    $admins = array(1, 5, 10, 14, 23);
+                    foreach ($admins as $key => $value) {
+                        $this->repositionArrayElement($result, $value, $key);
+                    }
                     return $responses->goodData($result);
                 }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->error1;
             }
+        }
+
+        private function repositionArrayElement(array &$array, $key, int $order) {
+            if(($a = array_search($key, array_column($array, 'id'))) === false) return;
+            $p1 = array_splice($array, $a, 1);
+            $p2 = array_splice($array, 0, $order);
+            $array = array_merge($p2, $p1, $array);
         }
 
 
