@@ -225,6 +225,45 @@
             }
         }
 
+        // Teachers
+        public function getTeachers($idDirective) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 2);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                function orderTeachers($data1, $data2) {
+                    return base64_decode($data1['name']) > base64_decode($data2['name']);
+                }
+                /* ################################################## */
+                $consult = $db->Query("SELECT * FROM `students`");
+                if ($consult) {
+                    $data = array();
+                    while ($student = $consult->fetch_array()) {
+                        if (strpos(base64_decode($student['curse']), "Docente") !== false) array_push($data, array(
+                            'id' => $student['id'],
+                            'name' => $student['name'],
+                            'dni' => $student['dni'],
+                            'curse' => $student['curse'],
+                            'tel' => $student['tel'],
+                            'email' => $student['email'],
+                            'date' => $student['date'],
+                            'picture' => $student['picture']
+                        ));
+                    }
+                    usort($data, "orderTeachers");
+                    return $responses->goodData($data);
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
+
         // Family
         public function family_getStudentId(string $dni) {
             $responses = new Responses();

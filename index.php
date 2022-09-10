@@ -119,6 +119,20 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['getAllTeachers'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $student->getTeachers($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
     if (isset($_POST['editStudent'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'id')) && $verifyData->issetPosts(array('name', 'dni', 'course', 'tel', 'date', 'email'))) {
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
