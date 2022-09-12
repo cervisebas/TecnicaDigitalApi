@@ -514,6 +514,25 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['editMatter'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idMatter', 'idTeacher', 'name'))) {
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $modify = $matters->modify(
+                $idDirective,
+                $_POST['idMatter'],
+                $_POST['idTeacher'],
+                $_POST['name']
+            );
+            echo json_encode($modify);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
     
 
     // Records
