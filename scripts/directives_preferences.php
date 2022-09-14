@@ -17,7 +17,7 @@
                     $actualDateTime = strtotime(base64_decode($actualData['date_update']));
                     $updateDateTime = strtotime(base64_decode($date));
                     if ($updateDateTime == $actualDateTime) return $responses->good;
-                    $compare = ($updateDateTime - $actualDateTime) >= 0;
+                    $compare = ($updateDateTime - $actualDateTime) <= 0;
                     if ($compare) {
                         $consult2 = $db->Query("UPDATE `directives_preferences` SET `date_update`='$date', `datas`='$datas' WHERE `id_directive`=$idDirective");
                         return ($consult2)? $responses->good: $responses->error2;
