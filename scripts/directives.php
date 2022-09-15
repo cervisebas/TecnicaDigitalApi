@@ -130,9 +130,12 @@
         }
         public function delete($idDirective, $idDelete) {
             $responses = new Responses();
+            $delimiters = array(1, 5, 10, 14, 23);
             try {
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                if (!!array_search((int) $idDelete, $delimiters)) return $responses->errorData("No puedes borrar a un creador.");
                 /* ################################################## */
                 if ((int) $idDirective == (int) $idDelete) return $responses->errorData("No te puedes eliminar a ti mismo.");
                 /* ################################################## */
