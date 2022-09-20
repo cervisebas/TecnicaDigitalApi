@@ -319,9 +319,10 @@
                     $result = array();
                     while ($assist = $consult->fetch_array()) {
                         $date = $this->system_getdate($assist['id_group']);
+                        $nowYear = date("Y");
                         $statusGroup = $this->system_getstatus($assist['id_group']);
                         if ($statusGroup == "1") {
-                            array_push($result, array(
+                            if (strpos(base64_decode($date), $nowYear) !== false) array_push($result, array(
                                 'id' => $assist['id'],
                                 'date' => $date,
                                 'hour' => $assist['hour'],
