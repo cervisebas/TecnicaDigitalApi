@@ -8,3 +8,4 @@ tmp_files/**
 !image/get.php
 scripts/SecurityKeyCodes.php
 build
+test.php
