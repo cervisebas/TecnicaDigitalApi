@@ -30,5 +30,11 @@
         public function error1Data($data) {
             return array('ok' => false, 'cause' => 'Ocurrio un error de parte del servidor.', 'datas' => $data);
         }
+
+        public function writeError($error) {
+            $fp = fopen('errores.txt', 'w');
+            fwrite($fp, $error);
+            fclose($fp);
+        }
     }
 ?>

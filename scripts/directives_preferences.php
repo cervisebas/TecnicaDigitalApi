@@ -30,7 +30,36 @@
             }
         }
         private function convertDate(string $input) {
-            return DateTime::createFromFormat('d/m/Y H:i', $input)->getTimestamp();
+            // DD/MM/YYYY
+            $intent =  DateTime::createFromFormat('d/m/Y H:i', $input);
+            if ($intent) return $intent->getTimestamp();
+            
+            $intent2 = DateTime::createFromFormat('d/m/Y H:i:s', $input);
+            if ($intent2) return $intent2->getTimestamp();
+            
+            // MM/DD/YYYY
+            $intent5 = DateTime::createFromFormat('m/d/Y H:i', $input);
+            if ($intent5) return $intent5->getTimestamp();
+
+            $intent6 = DateTime::createFromFormat('m/d/Y H:i:s', $input);
+            if ($intent6) return $intent6->getTimestamp();
+            
+            // YYYY/MM/DD
+            $intent3 = DateTime::createFromFormat('Y/m/d H:i', $input);
+            if ($intent3) return $intent3->getTimestamp();
+            
+            $intent4 = DateTime::createFromFormat('Y/m/d H:i:s', $input);
+            if ($intent4) return $intent4->getTimestamp();
+            
+            // YYYY/DD/MM
+            $intent7 = DateTime::createFromFormat('Y/d/m H:i', $input);
+            if ($intent7) return $intent7->getTimestamp();
+
+            $intent7 = DateTime::createFromFormat('Y/d/m H:i:s', $input);
+            if ($intent7) return $intent7->getTimestamp();
+
+            // Default
+            return strtotime($input);
         }
         public function get($idDirective) {
             $responses = new Responses();

@@ -361,24 +361,27 @@
                     $data_curse = $value["curse"];
                     $data_hour = $value["hour"];
                     $data_date = $value["date"];
-                    $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$data_curse' AND `date`='$data_date' AND `hour`='$data_hour'");
-                    if ($consult) {
-                        if ($consult->num_rows == 0) {
-                            $consult2 = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$data_curse', '$data_date', '$data_hour', '0')");
-                            if ($consult2['exec']) {
-                                $idGroup = $consult2['connection']->insert_id;
-                                $lines = "";
-                                foreach ($value['list'] as &$value2) {
-                                    $c = (strlen($lines) == 0)? "": ", ";
-                                    $time = $value2['hour'];
-                                    $idStudent = $value2['id'];
-                                    $lines = $lines.$c."(NULL, $idStudent, $idGroup, '$time', '1', '1')";
+                    $verify = $this->test_verifyGroup($value['list'], $data_curse, $data_date, $data_hour);
+                    if ($verify) {
+                        $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$data_curse' AND `date`='$data_date' AND `hour`='$data_hour'");
+                        if ($consult) {
+                            if ($consult->num_rows == 0) {
+                                $consult2 = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$data_curse', '$data_date', '$data_hour', '0')");
+                                if ($consult2['exec']) {
+                                    $idGroup = $consult2['connection']->insert_id;
+                                    $lines = "";
+                                    foreach ($value['list'] as &$value2) {
+                                        $c = (strlen($lines) == 0)? "": ", ";
+                                        $time = $value2['hour'];
+                                        $idStudent = $value2['id'];
+                                        $lines = $lines.$c."(NULL, $idStudent, $idGroup, '$time', '1', '1')";
+                                    }
+                                    $consult3 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES $lines");
+                                    if ($consult3) $return += 1;
                                 }
-                                $consult3 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES $lines");
-                                if ($consult3) $return += 1;
+                            } else {
+                                $return += 1;
                             }
-                        } else {
-                            $return += 1;
                         }
                     }
                 }
@@ -395,6 +398,76 @@
             } catch (\Throwable $th) {
                 return $responses->errorTypical;
             }
+        }
+        private function test_verifyGroup($students, $curse, $date, $time) {
+            try {
+                return $this->verifyGroup($students, $curse, $date, $time);
+            } catch (\Throwable $th) {
+                return true;
+            }
+        }
+        private function getFromCurseAndDate(string $curse, string $date) {
+            $db = new DBSystem();
+            $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$curse' AND `date`='$date'");
+            if ($consult) {
+                $array = $consult->fetch_array();
+                $result = array();
+                foreach ($array as $key => $group) {
+                    $group = $this->system_getIndividual($group['id']);
+                    array_push($result, array(
+                        'id' => $group['id'],
+                        'curse' => $group['curse'],
+                        'date' => $group['date'],
+                        'hour' => $group['hour'],
+                        'status' => $group['status'],
+                        'students' => $group
+                    ));
+                }
+                return $result;
+            }
+        }
+        private function verifyGroup($students, $curse, $date, $time) {
+            $getNewTimes = $this->filterTime(base64_decode($time));
+            $groups = $this->getFromCurseAndDate($curse, $date);
+            $groupsByTime = array();
+            foreach ($groups as $key => $group) {
+                foreach ($getNewTimes as $key => $time) {
+                    if (base64_decode($group['hour']) == $time)
+                        array_push($push, $groupsByTime);
+                }
+            }
+            $groupsByStudents = array();
+            foreach ($groupsByTime as $key => $group) {
+                foreach ($students as $key => $student) {
+                    $find = array_search($student['id'], array_column($group['students'], 'id'));
+                    if ($find !== false) array_push($groupsByStudents);
+                }
+            }
+            return (count($groupsByStudents) == 0);
+        }
+        private function system_getIndividual(string $idGroup) {
+            $db = new DBSystem();
+            $consult = $db->Query("SELECT * FROM `assists` WHERE `id_group`=$idGroup");
+            if ($consult) {
+                $result = array();
+                while ($assist = $consult->fetch_array()) {
+                    $date = $this->system_getdate($assist['id_group']);
+                    array_push($result, array(
+                        'id' => $assist['id'],
+                        'date' => $date,
+                        'hour' => $assist['hour'],
+                        'status' => ($assist['status'] == '1')? true: false,
+                        'credential' => ($assist['credential'] == '1')? true: false
+                    ));
+                }
+                return $result;
+            }
+        }
+        private function filterTime($time) {
+            if ($time == "7:15" || $time == "8:40" || $time == "9:50" || $time == "11:00") 
+                return array("7:15", "8:40", "9:50", "11:00");
+            if ($time == "13:15" || $time == "14:25" || $time == "15:35" || $time == "16:45") 
+                return array("13:15", "14:25", "15:35", "16:45");
         }
     }
 ?>

@@ -9,7 +9,8 @@ const assets = [
     './image/default.png',
     './image/default-admin.png',
     './image/default-admin-bad.png',
-    './image/console.png'
+    './image/console.png',
+    './errores.txt'
 ];
 const nodb = process.argv.slice(2).find((v)=>v.indexOf("--nodb") !== -1) !== undefined;
 
