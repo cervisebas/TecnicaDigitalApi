@@ -400,9 +400,11 @@
             }
         }
         private function test_verifyGroup($students, $curse, $date, $time) {
+            $responses = new Responses();
             try {
                 return $this->verifyGroup($students, $curse, $date, $time);
             } catch (\Throwable $th) {
+                $responses->writeError($th);
                 return true;
             }
         }
