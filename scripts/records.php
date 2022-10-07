@@ -65,12 +65,26 @@
                             'section' => $data['section']
                         ));
                     }
+                    $this->filterGetAll($datas);
                     return $responses->goodData(array_reverse($datas));
                 }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->errorTypical;
             }
+        }
+        public function filterGetAll(&$datas) {
+            $newResult = array();
+            foreach ($datas as $value) {
+                $dateValue = $this->getMonthToDate($value['date']);
+                $dateNow = date("m");
+                if ($dateValue == $dateNow) array_push($newResult, $value);
+            }
+            return $datas = $newResult;
+        }
+        private function getMonthToDate(string $input) {
+            $intent =  DateTime::createFromFormat('d/m/Y', base64_decode($input));
+            return $intent->format("m");
         }
     }
     

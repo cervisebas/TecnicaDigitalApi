@@ -48,6 +48,8 @@
     # **************************** Only Students And Family ********************************
     if (isset($_POST['family_login'])) {
         if ($verifyData->issetDataPost(array('dni'))) {
+            $verifyData->checkDataTypes($_POST['dni'], 'string-base64');
+            
             $open = $student->family_logIn($_POST['dni']);
             echo json_encode($open);
             return;
@@ -57,6 +59,8 @@
     }
     if (isset($_POST['family_getData'])) {
         if ($verifyData->issetDataPost(array('dni'))) {
+            $verifyData->checkDataTypes($_POST['dni'], 'string-base64');
+
             $idStudent = $student->family_getStudentId($_POST['dni']);
             if (is_object($idStudent)) {
                 echo json_encode($idStudent);
@@ -71,6 +75,8 @@
     }
     if (isset($_POST['family_getDataAssist'])) {
         if ($verifyData->issetDataPost(array('dni'))) {
+            $verifyData->checkDataTypes($_POST['dni'], 'string-base64');
+            
             $idStudent = $student->family_getStudentId($_POST['dni']);
             if (is_object($idStudent)) {
                 echo json_encode($idStudent);
@@ -93,6 +99,16 @@
     // Students
     if (isset($_POST['addNewStudent'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'name', 'dni', 'course', 'tel', 'date'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['name'], 'string-base64',
+                $_POST['dni'], 'string-base64',
+                $_POST['course'], 'string-base64',
+                $_POST['tel'], 'string-base64',
+                $_POST['date'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -107,6 +123,8 @@
     }
     if (isset($_POST['getAllStudent'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -121,6 +139,8 @@
     }
     if (isset($_POST['getAllTeachers'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -135,6 +155,8 @@
     }
     if (isset($_POST['editStudent'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'id')) && $verifyData->issetPosts(array('name', 'dni', 'course', 'tel', 'date', 'email'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['id'], 'number');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -149,6 +171,8 @@
     }
     if (isset($_POST['deleteStudent'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'id'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['id'], 'number');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -165,6 +189,14 @@
     // Assist
     if (isset($_POST['createGroupAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'curse', 'date', 'hour'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['curse'], 'string-base64',
+                $_POST['date'], 'string-base64',
+                $_POST['hour'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -184,6 +216,8 @@
     }
     if (isset($_POST['getAllGroupAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -198,6 +232,12 @@
     }
     if (isset($_POST['getGroupAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'id'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['id'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -212,6 +252,13 @@
     }
     if (isset($_POST['confirmGroupAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idGroup', 'datas'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idGroup'], 'number',
+                $_POST['datas'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -230,6 +277,12 @@
     }
     if (isset($_POST['deleteGroupAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idGroup'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idGroup'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -244,6 +297,12 @@
     }
     if (isset($_POST['getIndividualAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idStudent'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idStudent'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -260,6 +319,13 @@
     // Annotations
     if (isset($_POST['setAnnotationAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idGroup', 'note'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idGroup'], 'number',
+                $_POST['note'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -274,6 +340,12 @@
     }
     if (isset($_POST['getGroupAnnotationAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idGroup'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idGroup'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -288,6 +360,12 @@
     }
     if (isset($_POST['deleteAnnotationAssist'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idGroup'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idGroup'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -304,6 +382,8 @@
     // Directives
     if (isset($_POST['openSessionDirectives'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $open = $directives->open($_POST['username'], $_POST['password']);
             echo json_encode($open);
             return;
@@ -313,6 +393,8 @@
     }
     if (isset($_POST['getAllDirectives'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -327,6 +409,12 @@
     }
     if (isset($_POST['editDirective'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idEdit')) && $verifyData->issetPosts(array('name', 'position', 'dni', 'newUsername', 'newPassword', 'permission'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idEdit'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -350,6 +438,17 @@
     }
     if (isset($_POST['addDirective'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'name', 'position', 'dni', 'newUsername', 'newPassword', 'permission'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['name'], 'string-base64',
+                $_POST['position'], 'string-base64',
+                $_POST['dni'], 'string-base64',
+                $_POST['newUsername'], 'string-base64',
+                $_POST['newPassword'], 'string-base64',
+                $_POST['permission'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -372,6 +471,12 @@
     }
     if (isset($_POST['deleteDirective'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idDirective'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idDirective'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -388,6 +493,8 @@
     // Preferences
     if (isset($_POST['getPreferencesDirective'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -402,6 +509,13 @@
     }
     if (isset($_POST['updatePreferencesDirective'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'date', 'datas'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['date'], 'string-base64',
+                $_POST['datas'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -422,6 +536,13 @@
     // Schedule
     if (isset($_POST['addSchedule'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'curse', 'data'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['curse'], 'string-base64',
+                $_POST['data'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -440,6 +561,8 @@
     }
     if (isset($_POST['getAllSchedules'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -454,6 +577,12 @@
     }
     if (isset($_POST['deleteSchedule'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idSchedule'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idSchedule'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -470,6 +599,13 @@
     // Matters
     if (isset($_POST['addMatter'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idTeacher', 'name'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idTeacher'], 'number',
+                $_POST['name'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -488,6 +624,8 @@
     }
     if (isset($_POST['getAllMatters'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -502,6 +640,12 @@
     }
     if (isset($_POST['deleteMatter'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idMatter'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idMatter'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -516,6 +660,14 @@
     }
     if (isset($_POST['editMatter'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idMatter', 'idTeacher', 'name'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idMatter'], 'number',
+                $_POST['idTeacher'], 'number',
+                $_POST['name'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -538,6 +690,8 @@
     // Records
     if (isset($_POST['getRecords'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -554,6 +708,8 @@
     // Curses Groups
     if (isset($_POST['getAllCursesGroups'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -568,6 +724,12 @@
     }
     if (isset($_POST['editCurseGroup'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idEdit')) && $verifyData->issetPosts(array('curse', 'group', 'students'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idEdit'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -588,6 +750,14 @@
     }
     if (isset($_POST['addCurseGroup'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'curse', 'group', 'students'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['curse'], 'string-base64',
+                $_POST['group'], 'string-base64',
+                $_POST['students'], 'string-base64'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);
@@ -607,6 +777,12 @@
     }
     if (isset($_POST['deleteCurseGroup'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'idGroup'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idGroup'], 'number'
+            );
+            
             $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
             if (is_object($idDirective)) {
                 echo json_encode($idDirective);

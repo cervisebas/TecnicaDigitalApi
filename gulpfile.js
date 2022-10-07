@@ -36,7 +36,8 @@ function compressPhp() {
         "./**/*.php",
         "!node_modules/**/*.php",
         "!libs/**/*.php",
-        "!build/**/*.php"
+        "!build/**/*.php",
+        "!test.php"
     ];
     if (nodb) dirs.push("!scripts/database.php");
     return gulp.src(dirs, { read: false })

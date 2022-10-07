@@ -14,6 +14,7 @@
         public $errorPermission = array('ok' => false, 'cause' => 'No posee los permisos suficientes.');
         public $errorHeader = array('ok' => false, 'cause' => 'LLave de seguridad incorrecta.');
         public $errorNoPost = array('ok' => false, 'cause' => 'No se detecto ningun dato.');
+        public $errorDataPost = array('ok' => false, 'cause' => 'Los datos ingresados no eran los esperados.');
 
         public $errorUpdate = array('ok' => false, 'cause' => 'La versión de la aplicación que está ejecutando es antigua.', 'datas' => 'alert');
         public $errorIncompatible = array('ok' => false, 'cause' => 'Función incompatible o no implementada.', 'datas' => 'alert');

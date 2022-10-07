@@ -59,6 +59,80 @@
                 return false;
             }
         }
+        
+        // Check types data
+        public function checkDataTypes(...$datas) {
+            $responses = new Responses();
+            $result = $this->checkDataTypesResult($datas);
+            if (!$result) {
+                echo json_encode($responses->errorDataPost);
+                exit();
+            }
+        }
+        private function checkDataTypesResult($datas) {
+            try {
+                $order = $this->orderData($datas);
+                $result = true;
+                foreach ($order as $value) {
+                    if (!$this->checkType($value[0], $value[1])) {
+                        $result = false;
+                    }
+                }
+                return $result;
+            } catch (\Throwable $th) {
+                return false;
+            }
+        }
+        private function orderData($datas) {
+            $result = array();
+            $used = array();
+            for ($i=0; $i < count($datas); $i++) {
+                if (!in_array($i, $used)) {
+                    array_push($result, array(
+                        $datas[$i],
+                        $datas[$i + 1]
+                    ));
+                    array_push($used, $i);
+                    array_push($used, $i + 1);
+                }
+            }
+            return $result;
+        }
+        private function checkType($data, string $type) {
+            $result = false;
+            switch ($type) {
+                case 'string':
+                    $result = is_string($data);
+                    break;
+                case 'int':
+                    $result = is_int($data);
+                    break;
+                case 'float':
+                    $result = is_float($data);
+                    break;
+                case 'number':
+                    $result = is_numeric($data);
+                    break;
+                case 'bool':
+                    $result = is_bool($data);
+                    break;
+                case 'base64':
+                    $result = $this->is_base64($data);
+                    break;
+                case 'string-base64':
+                    $result = is_string($data) && $this->is_base64($data);
+                    break;
+            }
+            return $result;
+        }
+        private function is_base64(string $data) {
+            try {
+                if (base64_encode(base64_decode($data, true)) === $data) return true;
+                return false;
+            } catch (\Throwable $th) {
+                return false;
+            }
+        }
     }
     
 ?>
