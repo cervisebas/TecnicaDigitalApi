@@ -76,15 +76,21 @@
         public function filterGetAll(&$datas) {
             $newResult = array();
             foreach ($datas as $value) {
-                $dateValue = $this->getMonthToDate($value['date']);
-                $dateNow = date("m");
-                if ($dateValue == $dateNow) array_push($newResult, $value);
+                $dateMValue = $this->getMonthToDate($value['date']);
+                $dateMNow = date("m");
+                $dateYValue = $this->getYearToDate($value['date']);
+                $dateYNow = date("Y");
+                if ($dateMValue == $dateMNow && $dateYValue == $dateYNow) array_push($newResult, $value);
             }
             return $datas = $newResult;
         }
         private function getMonthToDate(string $input) {
             $intent =  DateTime::createFromFormat('d/m/Y', base64_decode($input));
             return $intent->format("m");
+        }
+        private function getYearToDate(string $input) {
+            $intent =  DateTime::createFromFormat('d/m/Y', base64_decode($input));
+            return $intent->format("Y");
         }
     }
     
