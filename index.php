@@ -89,6 +89,22 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['family_getSchedule'])) {
+        if ($verifyData->issetDataPost(array('dni', 'curse'))) {
+            $verifyData->checkDataTypes($_POST['dni'], 'string-base64', $_POST['curse'], 'string-base64');
+            
+            $idStudent = $student->family_getStudentId($_POST['dni']);
+            if (is_object($idStudent)) {
+                echo json_encode($idStudent);
+                return;
+            }
+            $get = $schedule->get($_POST['curse']);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
 
     if (!$isAdmin) {
         echo json_encode($responses->errorNoPost);
@@ -224,6 +240,22 @@
                 return;
             }
             $get = $assist->getAll($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['getAllGroupTeachersAssist'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $assist->getAllTeachers($idDirective);
             echo json_encode($get);
             return;
         }
@@ -559,6 +591,32 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['editSchedule'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idSchedule', 'curse', 'data'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idSchedule'], 'number',
+                $_POST['curse'], 'string-base64',
+                $_POST['data'], 'string-base64'
+            );
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $modify = $schedule->modify(
+                $idDirective,
+                $_POST['idSchedule'],
+                $_POST['data']
+            );
+            echo json_encode($modify);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
     if (isset($_POST['getAllSchedules'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
             $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
@@ -568,7 +626,7 @@
                 echo json_encode($idDirective);
                 return;
             }
-            $get = $cursesGroup->getAll($idDirective);
+            $get = $schedule->getAll($idDirective);
             echo json_encode($get);
             return;
         }

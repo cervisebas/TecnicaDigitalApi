@@ -79,7 +79,7 @@
                 $db = new DBSystem();
                 /* ################################################## */
                 $consult = $db->Query("SELECT * FROM `schedule` WHERE `curse`='$curse'");
-                if ($consult) return $consult->num_rows == 0;
+                if ($consult) return $consult->num_rows !== 0;
                 return false;
             } catch (\Throwable $th) {
                 return false;
@@ -109,6 +109,7 @@
                 }
                 return $responses->error2;
             } catch (\Throwable $th) {
+                $responses->writeError($th);
                 return $responses->error1;
             }
         }
@@ -119,6 +120,7 @@
                 /* ################################################## */
                 $consult = $db->Query("SELECT * FROM `schedule` WHERE `curse`='$curse'");
                 if ($consult) {
+                    if ($consult->num_rows == 0) return $responses->errorScheduleNotAvailable;
                     $schedule = $consult->fetch_array();
                     return $responses->goodData(array(
                         'id' => $schedule['id'],
@@ -133,13 +135,14 @@
         }
         public function processData(string $data) {
             $matters = new MatterSheduleSystem();
-            $process_data = json_decode(base64_decode($data));
+            $process_data = json_decode(base64_decode($data), true);
             $result = array();
-            foreach ($process_data as $key => $value) {
+            foreach ($process_data as $value) {
                 array_push($result, array(
+                    'day' => $value['day'],
                     'hour' => $value['hour'],
                     'group' => $value['group'],
-                    'matter' => $matters->get_system($value['id_matter'])
+                    'matter' => ($value['matter'] == 'none')? 'none': $matters->get_system($value['matter'])['datas']
                 ));
             }
             return $result;

@@ -17,18 +17,47 @@
                 $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$course' AND `date`='$date' AND `hour`='$hour'");
                 if ($consult) if (!$consult->num_rows == 0) return $responses->errorData("Ya existe un registro similar.");
                 /* ################################################## */
-                $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$hour', '0')");
+                $status = "0";
+                if (base64_decode($course) == "docentes") $status = "1";
+                $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$hour', '$status')");
                 if ($consult['exec']) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $newCurse = base64_decode($course);
+                    if ($newCurse == "docentes") $newCurse = "los docentes";
                     $records->create($idDirective, "El directivo @$usernameDirective creo un nuevo registro para $newCurse", 2, "Creación de registro", "Asistencia");
                     $new_id = $consult['connection']->insert_id;
                     $consult['connection']->close();
+                    if (base64_decode($course) == "docentes") $this->finishRegistAssistTeachers($new_id);
                     return $responses->goodData($new_id);
                 }
                 return $responses->error2;
             } catch (\Throwable $th) {
                 return $responses->error1;
+            }
+        }
+        private function finishRegistAssistTeachers($idGroup) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $students = new StudentSystem();
+                $teachers = $students->system_getTeachers();
+                if ($teachers) {
+                    $lines = "";
+                    foreach ($teachers as $value) {
+                        $c = (strlen($lines) == 0)? "": ", ";
+                        $time = base64_encode(date("H:i"));
+                        $idStudent = $value['id'];
+                        $lines = $lines.$c."(NULL, $idStudent, $idGroup, '$time', '0', '0')";
+                    }
+                    $responses->writeError($lines);
+                    $consult2 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES $lines ON DUPLICATE KEY UPDATE `hour`=CASE WHEN status='1' THEN hour ELSE VALUES(hour) END, `status`=VALUES(status)");
+                    if ($consult2) return true;
+                    return false;
+                }
+                return false;
+            } catch (\Throwable $th) {
+                $responses->writeError($th);
+                return false;
             }
         }
         public function confirmAssist($idDirective, $idGroup, $datas) {
@@ -111,7 +140,48 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
-                $consult = $db->Query("SELECT * FROM `groups`");
+                $consult = $db->Query("SELECT * FROM `groups` WHERE NOT `curse`='ZG9jZW50ZXM='");
+                if ($consult) {
+                    $result = array();
+                    while ($group = $consult->fetch_array()) {
+                        $countAnnotations = $annotations->get_system_count($group['id']);
+                        array_push($result, array(
+                            'id' => $group['id'],
+                            'curse' => $group['curse'],
+                            'date' => $group['date'],
+                            'hour' => $group['hour'],
+                            'status' => $group['status'],
+                            'annotations' => $countAnnotations
+                        ));
+                    }
+                    usort($result, function($a, $b) {
+                        $e1 = explode("/", base64_decode($a["date"]));
+                        $e2 = explode("/", base64_decode($b["date"]));
+                        $date1_2 = $e1[0]."-".$e1[1]."-".$e1[2]." ".base64_decode($a['hour']);
+                        $date2_2 = $e2[0]."-".$e2[1]."-".$e2[2]." ".base64_decode($b['hour']);
+                        $time1 = strtotime($date1_2);
+                        $time2 = strtotime($date2_2);
+                        return $time2 - $time1;
+                    });
+                    return $responses->goodData($result);
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
+        public function getAllTeachers($idDirective) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $permission = new DirectivesPermissionSystem();
+                $annotations = new AnnotationSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 1);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='ZG9jZW50ZXM='");
                 if ($consult) {
                     $result = array();
                     while ($group = $consult->fetch_array()) {
@@ -285,7 +355,9 @@
                 $consult = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
                 if ($consult) {
                     $dataGroup = $consult->fetch_array();
-                    $getStudents = $students->system_getAllForCurse($dataGroup['curse']);
+                    $curse = $dataGroup['curse'];
+                    if ($curse == base64_encode('docentes')) $curse = base64_encode('Docente');
+                    $getStudents = $students->system_getAllForCurse($curse);
                     if (!$getStudents['ok']) return $getStudents;
                     $result = array();
                     foreach ($getStudents['datas'] as &$student) {

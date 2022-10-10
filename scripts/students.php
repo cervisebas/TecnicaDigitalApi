@@ -263,6 +263,31 @@
                 return $responses->error1;
             }
         }
+        public function system_getTeachers() {
+            try {
+                $db = new DBSystem();
+                $consult = $db->Query("SELECT * FROM `students`");
+                if ($consult) {
+                    $data = array();
+                    while ($student = $consult->fetch_array()) {
+                        if (strpos(base64_decode($student['curse']), "Docente") !== false) array_push($data, array(
+                            'id' => $student['id'],
+                            'name' => $student['name'],
+                            'dni' => $student['dni'],
+                            'curse' => $student['curse'],
+                            'tel' => $student['tel'],
+                            'email' => $student['email'],
+                            'date' => $student['date'],
+                            'picture' => $student['picture']
+                        ));
+                    }
+                    return $data;
+                }
+                return false;
+            } catch (\Throwable $th) {
+                return false;
+            }
+        }
 
         // Family
         public function family_getStudentId(string $dni) {
