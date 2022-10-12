@@ -26,6 +26,7 @@
                 }
                 return $responses->error2;
             } catch (\Throwable $th) {
+                $responses->writeError($th);
                 return $responses->error1;
             }
         }
