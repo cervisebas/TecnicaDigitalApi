@@ -16,6 +16,7 @@
                     $actualData = $consult->fetch_array();
                     $actualDateTime = $this->convertDate(base64_decode($actualData['date_update']));
                     $updateDateTime = $this->convertDate(base64_decode($date));
+                    $responses->writeError("$actualDateTime - $updateDateTime\n".base64_decode($actualData['date_update'])." - ".base64_decode($date))."\n".$actualData;
                     if ($updateDateTime == $actualDateTime) return $responses->good;
                     $compare = ($actualDateTime - $updateDateTime) < 0;
                     if ($compare) {

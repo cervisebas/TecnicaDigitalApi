@@ -114,6 +114,10 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
+                function orderMatters($data1, $data2) {
+                    return base64_decode($data1['name']) > base64_decode($data2['name']);
+                }
+                /* ################################################## */
                 $consult = $db->Query("SELECT * FROM `matters`");
                 if ($consult) {
                     $data = array();
@@ -136,6 +140,7 @@
                             'name' => $schedule['name']
                         ));
                     }
+                    usort($data, "orderMatters");
                     return $responses->goodData($data);
                 }
                 return $responses->error2;
