@@ -20,6 +20,8 @@
         public $errorIncompatible = array('ok' => false, 'cause' => 'Función incompatible o no implementada.', 'datas' => 'alert');
         public $errorNotData = array('ok' => false, 'cause' => 'Faltan datos a ingresar, por favor revise los datos ingresados.');
         
+        public $errorMatterRepeat = array('ok' => false, 'cause' => 'Ya existe una materia con el docente ingresado.');
+
         public $errorScheduleRepeat = array('ok' => false, 'cause' => 'Ya se estableció un horario para este curso.');
         public $errorScheduleNotAvailable = array('ok' => false, 'cause' => 'No disponible.');
         

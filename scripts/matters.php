@@ -14,6 +14,8 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
+                if ($this->checkExist($idTeacher, $name)) return $responses->errorMatterRepeat;
+                /* ################################################## */
                 $consult = $db->Query("INSERT INTO `matters`(`id`, `id_teacher`, `name`) VALUES (NULL, $idTeacher, '$name')");
                 if ($consult) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
@@ -24,6 +26,17 @@
             } catch (\Throwable $th) {
                 return $responses->error1;
             }
+        }
+        private function checkExist($idTeacher, string $name) {
+            $db = new DBSystem();
+            $consult = $db->Query("SELECT * FROM `matters` WHERE `id_teacher`=$idTeacher AND `name`='$name'");
+            if ($consult) {
+                if ($consult->num_rows == 0)
+                    return false;
+                else
+                    return true;
+            }
+            return true;
         }
         public function delete($idDirective, string $idMatter) {
             $responses = new Responses();
