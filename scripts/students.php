@@ -114,6 +114,29 @@
                 return $responses->error1;
             }
         }
+        public function archive($idDirective, $idStudent) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
+                $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 2);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $consult = $db->Query("UPDATE `students` SET `curse`='QXJjaGl2YWRvcw==' WHERE `id`=$idStudent");
+                if ($consult) {
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
+                    $records->create($idDirective, "El directivo @$usernameDirective archivo al estudiante #$idStudent.", 1, "Archivar estudiante", "Estudiantes");
+                    return $responses->good;
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
         public function getAll($idDirective) {
             $responses = new Responses();
             try {

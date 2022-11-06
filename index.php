@@ -185,6 +185,22 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['archiveStudent'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'id'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['id'], 'number');
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $edit = $student->archive($idDirective, $_POST['id']);
+            echo json_encode($edit);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
     if (isset($_POST['deleteStudent'])) {
         if ($verifyData->issetDataPost(array('username', 'password', 'id'))) {
             $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['id'], 'number');
