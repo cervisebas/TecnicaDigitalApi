@@ -363,6 +363,54 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['addTeacherAssist'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idGroup', 'idTeacher'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['idGroup'], 'number', $_POST['idTeacher'], 'number');
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $add = $assist->addTeacherAssist($idDirective, $_POST['idGroup'], $_POST['idTeacher']);
+            echo json_encode($add);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['removeTeacherAssist'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idGroup', 'idTeacher'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['idGroup'], 'number', $_POST['idTeacher'], 'number');
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $remove = $assist->removeTeacherAssist($idDirective, $_POST['idGroup'], $_POST['idTeacher']);
+            echo json_encode($remove);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+    if (isset($_POST['modifyTeacherAssist'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idGroup', 'idTeacher'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64', $_POST['idGroup'], 'number', $_POST['idTeacher'], 'number', $_POST['status'], 'cboolean');
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $remove = $assist->modifyTeacherAssist($idDirective, $_POST['idGroup'], $_POST['idTeacher'], $_POST['status']);
+            echo json_encode($remove);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
 
     // Annotations
     if (isset($_POST['setAnnotationAssist'])) {

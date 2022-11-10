@@ -122,6 +122,9 @@
                 case 'string-base64':
                     $result = is_string($data) && $this->is_base64($data);
                     break;
+                case 'cboolean':
+                    $result = ($data == '0' || $data == '1')? true: false;
+                    break;
             }
             return $result;
         }

@@ -27,7 +27,7 @@
                     $records->create($idDirective, "El directivo @$usernameDirective creo un nuevo registro para $newCurse", 2, "Creación de registro", "Asistencia");
                     $new_id = $consult['connection']->insert_id;
                     $consult['connection']->close();
-                    if (base64_decode($course) == "docentes") $this->finishRegistAssistTeachers($new_id);
+                    //if (base64_decode($course) == "docentes") $this->finishRegistAssistTeachers($new_id);
                     return $responses->goodData($new_id);
                 }
                 return $responses->error2;
@@ -35,7 +35,8 @@
                 return $responses->error1;
             }
         }
-        private function finishRegistAssistTeachers($idGroup) {
+        
+        /*private function finishRegistAssistTeachers($idGroup) {
             $responses = new Responses();
             try {
                 $db = new DBSystem();
@@ -59,7 +60,76 @@
                 $responses->writeError($th);
                 return false;
             }
+        }*/
+        public function addTeacherAssist($idDirective, $idGroup, $idTeacher) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $permission = new DirectivesPermissionSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 2);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $time = base64_encode(date("H:i"));
+                $consult = $db->QueryAndConect("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $idGroup, '$time', '0', '0')");
+                if ($consult['exec']) {
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
+                    $records->create($idDirective, "El directivo @$usernameDirective añadió un docente al registro #$idGroup.", 1, "Edicion de registro", "Asistencia");
+                    $actualId = $consult['connection']->insert_id;
+                    $consult['connection']->close();
+                    return $responses->goodData($actualId);
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
         }
+        public function modifyTeacherAssist($idDirective, $idGroup, $idTeacher, string $status) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 2);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $time = base64_encode(date("H:i"));
+                $consult = $db->Query("UPDATE `assists` SET `hour`='$time', `status`='$status' WHERE `id_student`=$idTeacher AND `id_group`=$idGroup");
+                if ($consult) return $responses->good;
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
+        public function removeTeacherAssist($idDirective, $idGroup, $idTeacher) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $permission = new DirectivesPermissionSystem();
+                $directive = new DirectiveSystem();
+                $records = new RecordSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 2);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $consult = $db->Query("DELETE FROM `assists` WHERE `id_student`=$idTeacher AND `id_group`=$idGroup");
+                if ($consult) {
+                    $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
+                    $records->create($idDirective, "El directivo @$usernameDirective removió un docente en el registro #$idGroup.", 1, "Edicion de registro", "Asistencia");
+                    return $responses->good;
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
+
+
         public function confirmAssist($idDirective, $idGroup, $datas) {
             $responses = new Responses();
             try {
@@ -369,6 +439,7 @@
                             'status' => $status['ok'],
                             'idAssist' => $status['id_assist'],
                             'exist' => $status['credential'],
+                            'existRow' => ($status['id_assist'] !== -1),
                             'time' => $status['hour']
                         ));
                     }
