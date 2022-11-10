@@ -95,6 +95,10 @@
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
                 /* ################################################## */
+                function orderShedule($data1, $data2) {
+                    return base64_decode($data1['curse']) > base64_decode($data2['curse']);
+                }
+                /* ################################################## */
                 $consult = $db->Query("SELECT * FROM `schedule`");
                 if ($consult) {
                     $data = array();
@@ -105,6 +109,7 @@
                             'data' => $this->processData($schedule['data'])
                         ));
                     }
+                    usort($data, "orderShedule");
                     return $responses->goodData($data);
                 }
                 return $responses->error2;
