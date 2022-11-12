@@ -5,6 +5,7 @@
     class VerifyData {
         private $headerAdmin = 'Zr4u7x!A%D*G-KaNdRgUkXp2s5v8y/B?E(H+MbQeShVmYq3t6w9z$C&F)J@NcRfU';
         private $headerFamily = 'k3Ra4Q3HAL9MR7SAEPSNGY3mQNWsvWY2pLdLcu5LesH8rx6g2EFsrFAuCxsShbV7';
+        private $AppVersionAccept = 44;
 
         public function issetDataPost($array) {
             $final = true;
@@ -45,6 +46,9 @@
                 $responses = new Responses();
                 $securityKeyCodes = new SecurityKeyCodes();
                 $autorization = base64_decode((isset($headers['Authorization']))? $headers['Authorization']: ((isset($headers['authorization']))? $headers['authorization']: $_SERVER['HTTP_AUTHORIZATION']));
+                
+                //if (!$this->verifyAppVersion()) return $responses->errorUpdate;
+                
                 /*if ($autorization == $this->headerAdmin) return array('ok' => true, 'admin' => true);
                 if ($autorization == $this->headerFamily) return array('ok' => true, 'admin' => false);*/
                 if ($autorization == $this->headerAdmin) return $responses->errorUpdate;
@@ -58,6 +62,19 @@
             } catch (\Throwable $th) {
                 return false;
             }
+        }
+        public function verifyAppVersion() {
+            $responses = new Responses();
+            try {
+                $AppVersion = (isset($headers['AppVersion']))? $headers['AppVersion']: ((isset($headers['appversion']))? $headers['appversion']: $_SERVER['HTTP_APPVERSION']);
+                $Codes = explode('.', $AppVersion);
+                $VersionNumber = intval($Codes[0].$Codes[1]);
+                //$responses->writeError("App: $VersionNumber - Server: $this->AppVersionAccept");
+                if ($this->AppVersionAccept <= $VersionNumber) return true;
+                return false;
+            } catch (\Throwable $th) {
+                return false;
+            }            
         }
         
         // Check types data

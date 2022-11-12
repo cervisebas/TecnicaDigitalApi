@@ -1,2 +1,3 @@
 RewriteEngine On
 RewriteRule .* - [e=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteRule .* - [e=HTTP_APPVERSION:%{HTTP:AppVersion}]
