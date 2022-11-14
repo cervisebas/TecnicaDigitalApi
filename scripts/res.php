@@ -25,6 +25,8 @@
         public $errorScheduleRepeat = array('ok' => false, 'cause' => 'Ya se estableció un horario para este curso.');
         public $errorScheduleNotAvailable = array('ok' => false, 'cause' => 'No disponible.');
         
+        public $errorOutTime = array('ok' => false, 'cause' => 'No se detectó un tiempo óptimo para la consulta.');
+
         public function goodData($data) {
             return array('ok' => true, 'cause' => '', 'datas' => $data);
         }

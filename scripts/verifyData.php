@@ -163,6 +163,14 @@
                 return false;
             }
         }
+
+        // Utils
+        public function checkHourBetween(string $start, string $end, string $check) {
+            $currentTime = strtotime($check);
+            $startTime = strtotime($start);
+            $endTime = strtotime($end);
+            return (($startTime < $endTime && $currentTime >= $startTime && $currentTime <= $endTime) || ($startTime > $endTime && ($currentTime >= $startTime || $currentTime <= $endTime)));
+        }
     }
     
 ?>

@@ -614,5 +614,62 @@
             if ($time == "13:15" || $time == "14:25" || $time == "15:35" || $time == "16:45") 
                 return array("13:15", "14:25", "15:35", "16:45");
         }
+        public function setTeacherConsole($idTeacher, $time) {
+            $responses = new Responses();
+            try {
+                // Requires
+                $db = new DBSystem();
+                
+                // Variables
+                $dateNow = base64_encode(date("d/m/Y"));
+                $existRegist = false;
+                $registId = '-1';
+
+                // Check Time
+                $getTime = $this->getTimeForRegist($time);
+                if (is_object($getTime)) return $getTime;
+                $getTime = base64_encode($getTime);
+
+                // Check Exist
+                $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='ZG9jZW50ZXM=' AND `date`='$dateNow' AND `hour`='$getTime'");
+                if ($consult) {
+                    if ($consult->num_rows == 0) $existRegist = false; else {
+                        $datas = $consult->fetch_array();
+                        $existRegist = true;
+                        $registId = $datas['id'];
+                    }
+                } else return $responses->error2;
+            
+                // If exist
+                if ($existRegist) {
+                    $consult2 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $registId, $time, '1', '1')");
+                    if ($consult2) return $responses->good;
+                    return $responses->error2;
+                }
+
+                $consult2 = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, 'ZG9jZW50ZXM=', '$dateNow', '$time', '1')");
+                if ($consult2['exec']) {
+                    $new_id = $consult2['connection']->insert_id;
+                    $consult3 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $new_id, $time, '1', '1')");
+                    if ($consult3) return $responses->good;
+                    return $responses->error2;
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->errorTypical;
+            }
+        }
+        private function getTimeForRegist(string $time) {
+            $verify = new VerifyData();
+            $responses = new Responses();
+            try {
+                if ($verify->checkHourBetween('7:00', '12:00', base64_decode($time))) return '7:15';
+                if ($verify->checkHourBetween('12:50', '18:00', base64_decode($time))) return '13:15';
+                //return '13:15';
+                return $responses->errorOutTime;
+            } catch (\Throwable $th) {
+                return $responses->errorOutTime;
+            }            
+        }
     }
 ?>
