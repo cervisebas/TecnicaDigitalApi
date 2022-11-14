@@ -76,6 +76,16 @@
                 return false;
             }            
         }
+        public function getAppVersion() {
+            try {
+                $AppVersion = (isset($headers['AppVersion']))? $headers['AppVersion']: ((isset($headers['appversion']))? $headers['appversion']: $_SERVER['HTTP_APPVERSION']);
+                $Codes = explode('.', $AppVersion);
+                $VersionNumber = intval($Codes[0].$Codes[1]);
+                return $VersionNumber;
+            } catch (\Throwable $th) {
+                return 0;
+            }            
+        }
         
         // Check types data
         public function checkDataTypes(...$datas) {

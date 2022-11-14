@@ -330,6 +330,7 @@
         }
         public function family_logIn(string $dni) {
             $responses = new Responses();
+            $verifyData = new VerifyData();
             try {
                 $db = new DBSystem();
                 $consult = $db->Query("SELECT * FROM `students` WHERE `dni`='$dni'");
@@ -337,6 +338,13 @@
                     if ($consult->num_rows == 0) return $responses->errorData("No se encontró el alumno.");
                     $data = $consult->fetch_array();
                     if ($data['curse'] == base64_encode('Archivados')) return $responses->errorData("No se encontró el alumno.");
+                    $responses->writeError(strval($verifyData->getAppVersion()));
+                    if ($verifyData->getAppVersion() >= 50) return $responses->goodData(array(
+                        'id' => $data['id'],
+                        'dni' => $data['dni'],
+                        'name' => $data['name'],
+                        'picture' => $data['picture']
+                    ));
                     return $responses->goodData($data['id']);
                 }
                 return $responses->error2;
