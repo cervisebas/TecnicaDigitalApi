@@ -954,7 +954,7 @@
                 echo json_encode($verify);
                 return;
             }
-            $set = $assist->setDataFromConsole($_POST['data']);
+            $set = $assist->setTeacherConsole($_POST['idTeacher'], $_POST['time']);
             echo json_encode($set);
             return;
         }

@@ -633,28 +633,38 @@
                 // Check Exist
                 $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='ZG9jZW50ZXM=' AND `date`='$dateNow' AND `hour`='$getTime'");
                 if ($consult) {
-                    if ($consult->num_rows == 0) $existRegist = false; else {
+                    if ($consult->num_rows == 0) {
+                        $existRegist = false;
+                    } else {
                         $datas = $consult->fetch_array();
                         $existRegist = true;
                         $registId = $datas['id'];
                     }
-                } else return $responses->error2;
+                } else return $responses->error2Data('Paso 1');
             
                 // If exist
                 if ($existRegist) {
-                    $consult2 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $registId, $time, '1', '1')");
+                    // Check Exist Row
+                    $consult3 = $db->Query("SELECT * FROM `assists` WHERE `id_student`=$idTeacher AND `id_group`=$registId");
+                    if ($consult3) {
+                        if ($consult3->num_rows !== 0) return $responses->errorData("exist-row");
+                    } else return $responses->error2Data('Paso 2');
+
+                    // Create Row
+                    $consult2 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $registId, '$time', '1', '1')");
                     if ($consult2) return $responses->good;
-                    return $responses->error2;
+                    return $responses->error2Data('Paso 3');
                 }
 
-                $consult2 = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, 'ZG9jZW50ZXM=', '$dateNow', '$time', '1')");
+                // If Not Exist
+                $consult2 = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, 'ZG9jZW50ZXM=', '$dateNow', '$getTime', '1')");
                 if ($consult2['exec']) {
                     $new_id = $consult2['connection']->insert_id;
-                    $consult3 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $new_id, $time, '1', '1')");
+                    $consult3 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES (NULL, $idTeacher, $new_id, '$time', '1', '1')");
                     if ($consult3) return $responses->good;
-                    return $responses->error2;
+                    return $responses->error2Data('Paso 4');
                 }
-                return $responses->error2;
+                return $responses->error2Data('Paso 5');
             } catch (\Throwable $th) {
                 return $responses->errorTypical;
             }
@@ -665,7 +675,7 @@
             try {
                 if ($verify->checkHourBetween('7:00', '12:00', base64_decode($time))) return '7:15';
                 if ($verify->checkHourBetween('12:50', '18:00', base64_decode($time))) return '13:15';
-                //return '13:15';
+                //return '7:15';
                 return $responses->errorOutTime;
             } catch (\Throwable $th) {
                 return $responses->errorOutTime;

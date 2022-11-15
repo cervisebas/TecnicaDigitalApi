@@ -36,6 +36,9 @@
         public function error1Data($data) {
             return array('ok' => false, 'cause' => 'Ocurrio un error de parte del servidor.', 'datas' => $data);
         }
+        public function error2Data($data) {
+            return array('ok' => false, 'cause' => 'Ocurrio un error al acceder a la base de datos.', 'datas' => $data);
+        }
 
         public function writeError($error) {
             $fp = fopen('errores.txt', 'w');
