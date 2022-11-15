@@ -13,13 +13,16 @@
                 $verify = $permission->verify($idDirective, 2);
                 if (is_object($verify)) return $verify;
                 if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $newHour = $hour;
+                if (base64_decode($course) == "docentes") $newHour = base64_encode($this->getTimeForRegistAnyTeachers($hour));
                 /* ###############   Verify   ####################### */
-                $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$course' AND `date`='$date' AND `hour`='$hour'");
+                $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$course' AND `date`='$date' AND `hour`='$newHour'");
                 if ($consult) if (!$consult->num_rows == 0) return $responses->errorData("Ya existe un registro similar.");
                 /* ################################################## */
                 $status = "0";
                 if (base64_decode($course) == "docentes") $status = "1";
-                $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$hour', '$status')");
+                $consult = $db->QueryAndConect("INSERT INTO `groups`(`id`, `curse`, `date`, `hour`, `status`) VALUES (NULL, '$course', '$date', '$newHour', '$status')");
                 if ($consult['exec']) {
                     $usernameDirective = base64_decode($directive->getData_system($idDirective)['datas']['username']);
                     $newCurse = base64_decode($course);
@@ -680,6 +683,12 @@
             } catch (\Throwable $th) {
                 return $responses->errorOutTime;
             }            
+        }
+        private function getTimeForRegistAnyTeachers(string $time) {
+            $verify = new VerifyData();
+            if ($verify->checkHourBetween('00:00', '12:00', base64_decode($time))) return '7:15';
+            if ($verify->checkHourBetween('12:01', '23:59', base64_decode($time))) return '13:15';
+            return '7:15';
         }
     }
 ?>

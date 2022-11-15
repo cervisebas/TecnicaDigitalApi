@@ -47,7 +47,7 @@
                 $securityKeyCodes = new SecurityKeyCodes();
                 $autorization = base64_decode((isset($headers['Authorization']))? $headers['Authorization']: ((isset($headers['authorization']))? $headers['authorization']: $_SERVER['HTTP_AUTHORIZATION']));
                 
-                //if (!$this->verifyAppVersion()) return $responses->errorUpdate;
+                if (!$this->verifyAppVersion()) return $responses->errorUpdate;
                 
                 /*if ($autorization == $this->headerAdmin) return array('ok' => true, 'admin' => true);
                 if ($autorization == $this->headerFamily) return array('ok' => true, 'admin' => false);*/
@@ -64,8 +64,17 @@
             }
         }
         public function verifyAppVersion() {
-            $responses = new Responses();
+            //$responses = new Responses();
             try {
+                // If is Console
+                $console = new ConsoleSystem();
+                if ($this->issetDataPost(array('keyAccess', 'dateAccess'))) {
+                    $verify = $console->verify($_POST['keyAccess'], $_POST['dateAccess']);
+                    if (is_object($verify)) return false;
+                    return true;
+                }
+
+                // If is App
                 $AppVersion = (isset($headers['AppVersion']))? $headers['AppVersion']: ((isset($headers['appversion']))? $headers['appversion']: $_SERVER['HTTP_APPVERSION']);
                 $Codes = explode('.', $AppVersion);
                 $VersionNumber = intval($Codes[0].$Codes[1]);
