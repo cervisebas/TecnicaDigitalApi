@@ -336,13 +336,16 @@
                     $result = array();
                     while ($assist = $consult->fetch_array()) {
                         $date = $this->system_getdate($assist['id_group']);
-                        array_push($result, array(
-                            'id' => $assist['id'],
-                            'date' => $date,
-                            'hour' => $assist['hour'],
-                            'status' => ($assist['status'] == '1')? true: false,
-                            'credential' => ($assist['credential'] == '1')? true: false
-                        ));
+                        $statusGroup = $this->system_getstatus($assist['id_group']);
+                        if ($statusGroup == "1") {
+                            array_push($result, array(
+                                'id' => $assist['id'],
+                                'date' => $date,
+                                'hour' => $assist['hour'],
+                                'status' => ($assist['status'] == '1')? true: false,
+                                'credential' => ($assist['credential'] == '1')? true: false
+                            ));
+                        }
                     }
                     usort($result, function($a, $b) {
                         $e1 = explode("/", base64_decode($a["date"]));

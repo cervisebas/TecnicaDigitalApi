@@ -134,6 +134,7 @@
             try {
                 $db = new DBSystem();
                 $permission = new DirectivesPermissionSystem();
+                $records = new RecordSystem();
                 /* ################################################## */
                 if (!!array_search((int) $idDelete, $delimiters)) return $responses->errorData("No puedes borrar a un creador.");
                 /* ################################################## */
@@ -149,6 +150,8 @@
                 $consult = $db->Query("DELETE FROM `directives` WHERE `id`=$idDelete");
                 if ($consult) {
                     $permission->delete($idDelete);
+                    $usernameDirective = base64_decode($this->getData_system($idDirective)['datas']['username']);
+                    $records->create($idDirective, "El directivo @$usernameDirective elimino al directivo #$idDelete.", 1, "Borrar directivo", "Directivos");
                     return $responses->good;
                 }
                 return $responses->error2;
