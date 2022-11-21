@@ -411,6 +411,28 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['getAssistForMonth'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'curse', 'month', 'age'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['curse'], 'string-base64',
+                $_POST['month'], 'number',
+                $_POST['age'], 'number'
+            );
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $assist->getDataForMonth($idDirective, $_POST['curse'], $_POST['month'], $_POST['age']);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
 
     // Annotations
     if (isset($_POST['setAnnotationAssist'])) {

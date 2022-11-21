@@ -97,6 +97,7 @@
                                 'id' => $data['id'],
                                 'picture' => $data['picture'],
                                 'username' => $data['username'],
+                                'name' => $data['name'],
                                 'password' => $password,
                                 'date' => $date
                             ));

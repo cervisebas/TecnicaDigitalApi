@@ -458,6 +458,77 @@
             }
         }
 
+        
+        public function get2_system_small($idGroup) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $students = new StudentSystem();
+                /* ################################################## */
+                $consult = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
+                if ($consult) {
+                    $dataGroup = $consult->fetch_array();
+                    $curse = $dataGroup['curse'];
+                    if ($curse == base64_encode('docentes')) $curse = base64_encode('Docente');
+                    $getStudents = $students->system_getAllForCurse($curse);
+                    if (!$getStudents['ok']) return $getStudents;
+                    $result = array();
+                    foreach ($getStudents['datas'] as &$student) {
+                        $status = $this->system_findStudent($student['id'], $idGroup);
+                        array_push($result, array(
+                            'name' => $student['name'],
+                            'status' => $status['ok']
+                        ));
+                    }
+                    return $responses->goodData($result);
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
+
+        
+        public function getDataForMonth($idDirective, string $curse, string $month, string $age) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 1);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $consult = $db->Query("SELECT * FROM `groups` WHERE `curse`='$curse'");
+                if ($consult) {
+                    $result = array();
+                    while ($group = $consult->fetch_array()) {
+                        if ($group['status'] == '1') {
+                            $dateData = explode('/', base64_decode($group['date']));
+                            if ($dateData[1] == $month && $dateData[2] == $age) {
+                                $assist = $this->get2_system_small($group['id']);
+                                if (!$assist['ok']) return ($assist['cause'] == $responses->error2['cause'])? $responses->error2Data('Step 2 / '.$group['id']): $assist;
+                                array_push($result, array(
+                                    'date' => $group['date'],
+                                    'hour' => $group['hour'],
+                                    'data' => $assist['datas']
+                                ));
+                            }
+                        }
+                    }
+                    return $responses->goodData(array(
+                        'curse' => $curse,
+                        'month' => $month,
+                        'age' => $age,
+                        'result' => $result
+                    ));
+                }
+                return $responses->error2Data('Step 1');
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
+
         // Family
         public function family_getData($idStudent) {
             $responses = new Responses();
