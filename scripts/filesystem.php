@@ -16,6 +16,13 @@
             $copy = imagewebp($process, './image/'.$newName, 70);
             return ($copy)? $newName: 'default.png';
         }
+        public function createDirectiveImage($file) {
+            $ImgProcess = new ProcessImageSystem();
+            $newName = 'directive_'.random_int(11111111, 99999999).'.webp';
+            $process = $ImgProcess->process3($file['tmp_name'], 512, 512);
+            $copy = imagewebp($process, './image/'.$newName, 70);
+            return ($copy)? $newName: 'default-admin.png';
+        }
     }
     
 ?>

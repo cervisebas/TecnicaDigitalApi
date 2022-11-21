@@ -161,6 +161,9 @@
                 case 'cboolean':
                     $result = ($data == '0' || $data == '1')? true: false;
                     break;
+                case 'file':
+                    $result = is_file($data);
+                    break;
             }
             return $result;
         }

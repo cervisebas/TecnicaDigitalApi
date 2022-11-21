@@ -80,6 +80,40 @@
                 return $responses->error1Data(array($idDirective, $idModify, $name, $position, $dni, $username, $password, $permissionLevel));
             }
         }
+        public function modifyImage($idDirective, $idModify) {
+            $responses = new Responses();
+            try {
+                $db = new DBSystem();
+                $records = new RecordSystem();
+                $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 3);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+                $verify2 = $permission->compare($idDirective, $idModify);
+                if (is_object($verify2)) return $verify2;
+                /* ################################################## */
+                $fileSystem = new FileSystem();
+                $verifyData = new VerifyData();
+                /* ################################################## */
+                $image = "";
+                if (!$verifyData->issetFilePost('image') && $verifyData->issetPosts(array('removeImage'))) {
+                    $image = base64_encode('default-admin.png');
+                } else {
+                    $image = base64_encode($fileSystem->createDirectiveImage($_FILES['image']));
+                }
+                $consult = $db->Query("UPDATE `directives` SET `picture`='$image' WHERE `id`=$idModify");
+                if ($consult) {
+                    $usernameDirective = base64_decode($this->getData_system($idDirective)['datas']['username']);
+                    $records->create($idDirective, "El directivo @$usernameDirective edito la imagen de perfil del directivo #$idModify.", 1, "Editar directivo", "Directivos");
+                    return $responses->good;
+                }
+                return $responses->error2;
+            } catch (\Throwable $th) {
+                return $responses->error1Data($th);
+            }
+        }
         public function open(string $username, string $password) {
             $responses = new Responses();
             try {

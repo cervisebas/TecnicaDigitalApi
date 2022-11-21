@@ -607,6 +607,27 @@
         echo json_encode($responses->errorTypical);
         return;
     }
+    if (isset($_POST['editImageDirective'])) {
+        if ($verifyData->issetDataPost(array('username', 'password', 'idEdit'))) {
+            $verifyData->checkDataTypes(
+                $_POST['username'], 'string-base64',
+                $_POST['password'], 'string-base64',
+                $_POST['idEdit'], 'number'
+                //$_FILES['image']['tmp_name'], 'file'
+            );
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $edit = $directives->modifyImage($idDirective, $_POST['idEdit']);
+            echo json_encode($edit);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
 
     // Preferences
     if (isset($_POST['getPreferencesDirective'])) {
