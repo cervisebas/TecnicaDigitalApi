@@ -1,5 +1,6 @@
 node_modules
 image/**
+removes/**
 tmp_files/**
 !image/console.png
 !image/default.png
