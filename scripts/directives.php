@@ -255,6 +255,13 @@
                     'username' => base64_encode('console-tecnica'),
                     'picture' => base64_encode('console.png')
                 ));
+                if ($idDirective == -2 || $idDirective == '-2') return $responses->goodData(array(
+                    'id' => 'SV',
+                    'name' => base64_encode('Técnica Server'),
+                    'position' => base64_encode('Servidor'),
+                    'username' => base64_encode('server-tecnica'),
+                    'picture' => base64_encode('server.png')
+                ));
                 $db = new DBSystem();
                 $default = array(
                     'id' => '-1',

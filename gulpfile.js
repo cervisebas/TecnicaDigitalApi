@@ -10,6 +10,7 @@ const assets = [
     './image/default-admin.png',
     './image/default-admin-bad.png',
     './image/console.png',
+    './image/server.png',
     './errores.txt'
 ];
 const nodb = process.argv.slice(2).find((v)=>v.indexOf("--nodb") !== -1) !== undefined;
@@ -63,6 +64,7 @@ function clearBuild() {
         fs.mkdirSync("./build");
         fs.mkdirSync("./build/image");
         fs.mkdirSync("./build/tmp_files");
+        fs.mkdirSync("./build/removes");
         await wait(500);
         resolve();
     });

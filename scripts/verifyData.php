@@ -77,9 +77,11 @@
                 // If is App
                 $AppVersion = (isset($headers['AppVersion']))? $headers['AppVersion']: ((isset($headers['appversion']))? $headers['appversion']: $_SERVER['HTTP_APPVERSION']);
                 $Codes = explode('.', $AppVersion);
-                $VersionNumber = intval($Codes[0].$Codes[1]);
-                //$responses->writeError("App: $VersionNumber - Server: $this->AppVersionAccept");
-                if ($this->AppVersionAccept <= $VersionNumber) return true;
+                if (count($Codes) >= 2) {
+                    $VersionNumber = intval($Codes[0].$Codes[1]);
+                    //$responses->writeError("App: $VersionNumber - Server: $this->AppVersionAccept");
+                    if ($this->AppVersionAccept <= $VersionNumber) return true;
+                }
                 return false;
             } catch (\Throwable $th) {
                 return false;
