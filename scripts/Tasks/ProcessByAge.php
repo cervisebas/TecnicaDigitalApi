@@ -42,5 +42,4 @@
             echo base64_decode($curse)." to ".utf8_encode(base64_decode($next)).": ".(($consult)? "true": "false")."<br>";
         }
     }
-    upgradeAllStudentsForCurse();
 ?>

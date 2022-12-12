@@ -1,7 +1,8 @@
 node_modules
-image/**
-removes/**
-tmp_files/**
+image/*
+removes/*
+olds/*
+tmp_files/*
 !image/console.png
 !image/default.png
 !image/default-admin.png

@@ -39,31 +39,6 @@
             }
         }
         
-        /*private function finishRegistAssistTeachers($idGroup) {
-            $responses = new Responses();
-            try {
-                $db = new DBSystem();
-                $students = new StudentSystem();
-                $teachers = $students->system_getTeachers();
-                if ($teachers) {
-                    $lines = "";
-                    foreach ($teachers as $value) {
-                        $c = (strlen($lines) == 0)? "": ", ";
-                        $time = base64_encode(date("H:i"));
-                        $idStudent = $value['id'];
-                        $lines = $lines.$c."(NULL, $idStudent, $idGroup, '$time', '0', '0')";
-                    }
-                    $responses->writeError($lines);
-                    $consult2 = $db->Query("INSERT INTO `assists`(`id`, `id_student`, `id_group`, `hour`, `status`, `credential`) VALUES $lines ON DUPLICATE KEY UPDATE `hour`=CASE WHEN status='1' THEN hour ELSE VALUES(hour) END, `status`=VALUES(status)");
-                    if ($consult2) return true;
-                    return false;
-                }
-                return false;
-            } catch (\Throwable $th) {
-                $responses->writeError($th);
-                return false;
-            }
-        }*/
         public function addTeacherAssist($idDirective, $idGroup, $idTeacher) {
             $responses = new Responses();
             try {
@@ -422,10 +397,12 @@
                 $db = new DBSystem();
                 $students = new StudentSystem();
                 /* ################################################## */
-                function orderStudents($data1, $data2) {
-                    $name1 = normalizeChars(base64_decode($data1['name']));
-                    $name2 = normalizeChars(base64_decode($data2['name']));
-                    return $name1 > $name2;
+                if (!function_exists('orderStudents')) {
+                    function orderStudents($data1, $data2) {
+                        $name1 = normalizeChars(base64_decode($data1['name']));
+                        $name2 = normalizeChars(base64_decode($data2['name']));
+                        return $name1 > $name2;
+                    }
                 }
                 /* ################################################## */
                 $consult = $db->Query("SELECT * FROM `groups` WHERE `id`=$idGroup");
