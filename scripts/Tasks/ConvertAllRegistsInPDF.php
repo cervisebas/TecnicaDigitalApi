@@ -4,6 +4,7 @@
 
     include_once "../../libs/HTML2PDF/Html2Pdf.php";
     include_once "../classes.php";
+    include_once "GetRegistsHTML.php";
 
     function getAllRegists() {
         $db = new DBSystem();
@@ -37,23 +38,7 @@
             }
 
             // # Convertir en PDF
-            $daysInMonth = cal_days_in_month(CAL_EASTER_DEFAULT, 12, 2022);
             $months = array(); // { month: string; datas: any; }
-
-            // Separar los datos por mes
-            /*foreach ($arrayData as $data) {
-                $dGroup = explode('/', base64_decode($data['group']['date']));
-                $find = array_search($dGroup[1], array_column($months, "month"));
-                if ($find !== false) {
-                    array_push($months[$find]['datas'], $data['assist']);
-                } else {
-                    array_push($months, array(
-                        "date" => base64_decode($data['group']['date']),
-                        "hour" => base64_decode($data['group']['hour']),
-                        "datas" => $data['assist']
-                    ));
-                }
-            }*/
 
             // Separar los datos por fecha
             foreach ($arrayData as $data) {
@@ -75,6 +60,7 @@
                 if ($findMonth === false) {
                     array_push($list, array(
                         'month' => $p_date[1],
+                        'age' => $p_date[2],
                         'list' => array()
                     ));
                     $findMonth = array_search($p_date[1], array_column($list, 'month'));
@@ -113,6 +99,7 @@
 
             // Completar dias faltantes
             foreach ($list as $index0 => $mth) {
+                $daysInMonth = cal_days_in_month(CAL_EASTER_DEFAULT, intval($mth['month']), intval($mth['age']));
                 foreach ($mth['list'] as $index => $st) {
                     for ($i=0; $i < $daysInMonth; $i++) {
                         $dayNumber = strval($i + 1);
@@ -150,14 +137,32 @@
                     $list[$i]['list'][$e]['list'] = $tmp_list;
                 }
             }
+            array_push($totalData, array(
+                'curse' => utf8_encode(base64_decode($curseGet)),
+                'data' => $list
+            ));
 
-            return $list;
+            return $totalData;
         }
     }
 
     function ConvertAllRegistsInPDF() {
+        $total = "";
         $lists = getAllRegists();
-        
+        foreach ($lists as $value) {
+            foreach ($value['data'] as $value2) {
+                $getHTML = getHTML(
+                    $value['curse'],
+                    array(
+                        intval($value2['month']),
+                        intval($value2['age'])
+                    ),
+                    $value2['list']
+                );
+                $total = $total.$getHTML;
+            }
+        }
+        echo $total;
     }
     ConvertAllRegistsInPDF();
 ?>
