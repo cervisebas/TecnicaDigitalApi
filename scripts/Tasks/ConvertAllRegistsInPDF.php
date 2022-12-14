@@ -1,8 +1,13 @@
 <?php
+
+use Dompdf\Dompdf;
+
     error_reporting(E_ERROR | E_PARSE);
     set_time_limit(3600);
 
-    include_once "../../libs/HTML2PDF/Html2Pdf.php";
+    require_once("../../libs/HTML2PDF/Html2Pdf.php");
+    //require_once "../../libs/dompdf/autoload.inc.php";
+
     include_once "../classes.php";
     include_once "GetRegistsHTML.php";
 
@@ -61,6 +66,10 @@
                     array_push($list, array(
                         'month' => $p_date[1],
                         'age' => $p_date[2],
+                        'status' => array(
+                            'assist' => 0,
+                            'notAssist' => 0
+                        ),
                         'list' => array()
                     ));
                     $findMonth = array_search($p_date[1], array_column($list, 'month'));
@@ -69,6 +78,7 @@
                 // Recorrer datos de los meses
                 foreach ($eMonth['datas'] as $value) {
                     $status = ($value['status'])? 'P': 'A';
+                    if ($value['status']) $list[$findMonth]['status']['assist'] += 1; else $list[$findMonth]['status']['notAssist'] += 1;
                     $nameDecode = utf8_encode(base64_decode($value['name']));
                     // Buscar al alumno en la lista
                     $findStd = array_search($value['id'], array_column($list[$findMonth]['list'], 'id'));
@@ -147,7 +157,6 @@
     }
 
     function ConvertAllRegistsInPDF() {
-        $total = "";
         $lists = getAllRegists();
         foreach ($lists as $value) {
             foreach ($value['data'] as $value2) {
@@ -157,12 +166,19 @@
                         intval($value2['month']),
                         intval($value2['age'])
                     ),
-                    $value2['list']
+                    $value2['list'],
+                    $value2['status']
                 );
-                $total = $total.$getHTML;
+
+                $outputFile = str_replace('°', '', $value['curse']).$value2['month'].$value2['age'].".pdf";
+                $saveFile = "../../olds/".$value2['age']."/$outputFile";
+                $html2pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'A3', 'es');
+                $html2pdf->setDefaultFont('Arial');
+                $html2pdf->writeHTML(str_replace(PHP_EOL, "", $getHTML));
+                $pdf = $html2pdf->output('', 's');
+                file_put_contents($saveFile, print_r($pdf, true));
             }
         }
-        echo $total;
     }
     ConvertAllRegistsInPDF();
 ?>
