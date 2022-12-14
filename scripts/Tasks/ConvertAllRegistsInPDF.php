@@ -30,6 +30,7 @@ use Dompdf\Dompdf;
 
         $curses = array('1°1', '1°2', '1°3', '2°1', '2°2', '2°3', '3°1', '3°2', '3°3', '4°1', '4°2', '4°3', '5°1', '5°2', '5°3', '6°1', '6°2', '6°3', '7°1', '7°2', '7°3');
         $totalData = array();
+        $age = "";
 
         foreach ($curses as $curseName) {
             $arrayData = array();
@@ -37,7 +38,6 @@ use Dompdf\Dompdf;
             $consult = $db->Query("SELECT * FROM `groups` WHERE `status`='1' AND `curse`='$curseGet'");
             if ($consult) {
                 // # Recoleccion de datos
-                $age = "";
                 while ($data = $consult->fetch_array()) {
                     if ($age == "") $age = explode('/', base64_decode($data['date']))[2];
                     $datasGroup = $assist->get2_system($data['id']);
@@ -152,8 +152,17 @@ use Dompdf\Dompdf;
                         $list[$i]['list'][$e]['list'] = $tmp_list;
                     }
                 }
+
+                // Guardar datos procesados
+                $file2 = "$dir/data_process_$processCurse.json";
+                if (!file_exists($file2)) {
+                    $filejson = fopen($file2, "w");
+                    fwrite($filejson, json_encode($list));
+                }
+
+                // Añadir listado a la variable total
                 array_push($totalData, array(
-                    'curse' => utf8_encode(base64_decode($curseGet)),
+                    'curse' => $curseName,
                     'data' => $list
                 ));
             }
@@ -161,10 +170,23 @@ use Dompdf\Dompdf;
         return $totalData;
     }
 
+    function array_push_autoinc(array &$array, $item) {
+        $next = sizeof($array);
+        $array[$next] = $item;
+        return $next;
+    }
+
     function ConvertAllRegistsInPDF() {
         $lists = getAllRegists();
+        $json_final = array();
+        $age = "";
         foreach ($lists as $value) {
+            $iArray = array_push_autoinc($json_final, array(
+                'curse' => $value['curse'],
+                'files' => array()
+            ));
             foreach ($value['data'] as $value2) {
+                if ($age == "") $age = $value2['age'];
                 $getHTML = getHTML(
                     $value['curse'],
                     array(
@@ -175,6 +197,7 @@ use Dompdf\Dompdf;
                     $value2['status']
                 );
 
+                // Save in PDF
                 $outputFile = str_replace('°', '', $value['curse']).$value2['month'].$value2['age'].".pdf";
                 $saveFile = "../../olds/".$value2['age']."/$outputFile";
                 $html2pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'A3', 'es');
@@ -182,7 +205,29 @@ use Dompdf\Dompdf;
                 $html2pdf->writeHTML(str_replace(PHP_EOL, "", $getHTML));
                 $pdf = $html2pdf->output('', 's');
                 file_put_contents($saveFile, print_r($pdf, true));
+
+                // Push data in array
+                setlocale(LC_ALL,"es_ES@euro","es_ES","esp");
+                $nameMonth = ucfirst(strftime("%B", mktime(0, 0, 0, intval($value2['month']), 10)));
+                
+                $processCurse = str_replace("°", "-", $value['curse']);
+                $file = "data_$processCurse.json";
+                $file2 = "data_process_$processCurse.json";
+
+                array_push($json_final[$iArray]['files'], array(
+                    'age' => $value2['age'],
+                    'data' => $file,
+                    'month' => $nameMonth,
+                    'pdf' => $outputFile,
+                    'process_data' => $file2
+                ));
             }
+        }
+
+        $file3 = "../../olds/index_$age.json";
+        if (!file_exists($file3)) {
+            $filejson = fopen($file3, "w");
+            fwrite($filejson, json_encode($json_final));
         }
     }
     ConvertAllRegistsInPDF();
