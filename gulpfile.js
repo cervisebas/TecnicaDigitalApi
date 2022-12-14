@@ -65,6 +65,7 @@ function clearBuild() {
         fs.mkdirSync("./build/image");
         fs.mkdirSync("./build/tmp_files");
         fs.mkdirSync("./build/removes");
+        fs.mkdirSync("./build/olds");
         await wait(500);
         resolve();
     });
