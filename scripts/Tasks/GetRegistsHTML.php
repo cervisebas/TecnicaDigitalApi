@@ -20,9 +20,9 @@
             </div>
             <div class='content-props'>
                 <div class='props'>
-                    <div class='prop'><p>CURSO:</p><p class='value'>$curse</p></div>
-                    <div class='prop'><p>MES:</p><p class='value'>$nameMonth</p></div>
-                    <div class='prop'><p>AÑO:</p><p class='value'>$age</p></div>
+                    <div class='prop'><p>CURSO: <span class='value'>$curse</span></p></div>
+                    <div class='prop'><p>MES: <span class='value'>$nameMonth</span></p></div>
+                    <div class='prop'><p>AÑO: <span class='value'>$age</span></p></div>
                 </div>
             </div>
             <table width='100%'>
@@ -78,7 +78,6 @@
                     font-size: 12px;
                 }
                 .prop .value {
-                    margin-left: 2px;
                     font-weight: normal;
                 }
                 table, th, td {
