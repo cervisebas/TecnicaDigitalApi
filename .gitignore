@@ -10,4 +10,5 @@ tmp_files/*
 !image/get.php
 scripts/SecurityKeyCodes.php
 build
+.tmp_compress
 test.php
