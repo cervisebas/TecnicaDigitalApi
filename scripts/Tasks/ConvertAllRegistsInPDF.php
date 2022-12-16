@@ -50,14 +50,15 @@ use Dompdf\Dompdf;
                 // # Guardar en JSON los datos
                 $dir = "../../olds/$age";
                 $processCurse = str_replace("°", "-", $curseName);
-                $file = "$dir/data_$processCurse.json";
+                $file = "$dir/data/data_$processCurse.json";
                 if (!is_dir($dir)) mkdir($dir);
+                if (!is_dir("$dir/data")) mkdir("$dir/data");
                 if (!file_exists($file)) {
                     $filejson = fopen($file, "w");
                     fwrite($filejson, json_encode($arrayData));
                 }
 
-                // # Convertir en PDF
+                // # Procesar los datos
                 $months = array(); // { month: string; datas: any; }
 
                 // Separar los datos por fecha
@@ -153,14 +154,15 @@ use Dompdf\Dompdf;
                     }
                 }
 
-                // Guardar datos procesados
-                $file2 = "$dir/data_process_$processCurse.json";
+                // # Guardar datos procesados
+                if (!is_dir("$dir/data_process")) mkdir("$dir/data_process");
+                $file2 = "$dir/data_process/data_process_$processCurse.json";
                 if (!file_exists($file2)) {
                     $filejson = fopen($file2, "w");
                     fwrite($filejson, json_encode($list));
                 }
 
-                // Añadir listado a la variable total
+                // # Añadir listado a la variable total
                 array_push($totalData, array(
                     'curse' => $curseName,
                     'data' => $list
@@ -198,8 +200,10 @@ use Dompdf\Dompdf;
                 );
 
                 // Save in PDF
+                $pDir = "../../olds/".$value2['age']."/pdf";
                 $outputFile = str_replace('°', '', $value['curse']).$value2['month'].$value2['age'].".pdf";
-                $saveFile = "../../olds/".$value2['age']."/$outputFile";
+                if (!is_dir($pDir)) mkdir($pDir);
+                $saveFile = "$pDir/$outputFile";
                 $html2pdf = new \Spipu\Html2Pdf\Html2Pdf('L', 'A3', 'es');
                 $html2pdf->setDefaultFont('Arial');
                 $html2pdf->writeHTML(str_replace(PHP_EOL, "", $getHTML));
