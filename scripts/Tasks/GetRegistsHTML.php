@@ -6,6 +6,9 @@
         //$nameMonth = DateTime::createFromFormat('!m', $month)->format('F');
         $nameMonth = ucfirst(strftime("%B", mktime(0, 0, 0, $month, 10)));
         $age = $date[1];
+
+        // Others
+        $nameCurse = ($curse == "docentes")? "Docentes": $curse;
         
         // Elements
         $getRows = getRowsTable($data);
@@ -20,7 +23,7 @@
             </div>
             <div class='content-props'>
                 <div class='props'>
-                    <div class='prop'><p>CURSO: <span class='value'>$curse</span></p></div>
+                    <div class='prop'><p>CURSO: <span class='value'>$nameCurse</span></p></div>
                     <div class='prop'><p>MES: <span class='value'>$nameMonth</span></p></div>
                     <div class='prop'><p>AÑO: <span class='value'>$age</span></p></div>
                 </div>

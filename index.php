@@ -45,6 +45,7 @@
     $matters = new MatterSheduleSystem();
     $schedule = new ScheduleSystem();
     $preferences = new DirectivesPreferencesSystem();
+    $oldData = new GetOldDatas();
     
     # **************************** Only Students And Family ********************************
     if (isset($_POST['family_login'])) {
@@ -855,6 +856,24 @@
 
     // Records
     if (isset($_POST['getRecords'])) {
+        if ($verifyData->issetDataPost(array('username', 'password'))) {
+            $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
+            
+            $idDirective = $directives->getDirectiveId($_POST['username'], $_POST['password']);
+            if (is_object($idDirective)) {
+                echo json_encode($idDirective);
+                return;
+            }
+            $get = $records->getAll($idDirective);
+            echo json_encode($get);
+            return;
+        }
+        echo json_encode($responses->errorTypical);
+        return;
+    }
+
+    // Old Data
+    if (isset($_POST['getAllOldData'])) {
         if ($verifyData->issetDataPost(array('username', 'password'))) {
             $verifyData->checkDataTypes($_POST['username'], 'string-base64', $_POST['password'], 'string-base64');
             
