@@ -882,7 +882,7 @@
                 echo json_encode($idDirective);
                 return;
             }
-            $get = $records->getAll($idDirective);
+            $get = $oldData->getAll($idDirective);
             echo json_encode($get);
             return;
         }
