@@ -337,8 +337,10 @@
                 if ($consult) {
                     if ($consult->num_rows == 0) return $responses->errorData("No se encontró el alumno.");
                     $data = $consult->fetch_array();
-                    if ($data['curse'] == base64_encode('Archivados')) return $responses->errorData("No se encontró el alumno.");
-                    $responses->writeError(strval($verifyData->getAppVersion()));
+                    $stCurse = base64_decode($data['curse']);
+                    if ($stCurse == 'Archivados') return $responses->errorData("No se encontró el alumno.");
+                    //$responses->writeError(strval($verifyData->getAppVersion()));
+                    if (strpos($stCurse, 'Egresados')) return $responses->errorData("El usuario ya no forma parte del listado de estudiantes.");
                     if ($verifyData->getAppVersion() >= 50) return $responses->goodData(array(
                         'id' => $data['id'],
                         'dni' => $data['dni'],

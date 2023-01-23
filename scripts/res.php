@@ -26,6 +26,8 @@
         public $errorScheduleNotAvailable = array('ok' => false, 'cause' => 'No disponible.');
         
         public $errorOutTime = array('ok' => false, 'cause' => 'No se detectó un tiempo óptimo para la consulta.');
+        public $errorNoFile = array('ok' => false, 'cause' => 'Ocurrió un error al intentar leer el archivo.');
+        public $errorNoDecode = array('ok' => false, 'cause' => 'Ocurrió un error al convertir el archivo.');
 
         public function goodData($data) {
             return array('ok' => true, 'cause' => '', 'datas' => $data);

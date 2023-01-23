@@ -37,6 +37,28 @@
                 return $responses->error1;
             }
         }
+        public function get($idDirective, string $age) {
+            $responses = new Responses();
+            try {
+                $permission = new DirectivesPermissionSystem();
+                /* ################################################## */
+                $verify = $permission->verify($idDirective, 1);
+                if (is_object($verify)) return $verify;
+                if (!$verify) return $responses->errorPermission;
+                /* ################################################## */
+
+                $uri = "./olds/index_$age.json";
+                $read = file_get_contents($uri);
+                if ($read !== false) {
+                    $convert = json_decode($read, true);
+                    if ($convert !== false) return $responses->goodData(null);
+                    return $responses->errorNoDecode;
+                }
+                return $responses->errorNoFile;
+            } catch (\Throwable $th) {
+                return $responses->error1;
+            }
+        }
     }
     
 ?>
