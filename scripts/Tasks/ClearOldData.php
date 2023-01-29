@@ -114,6 +114,7 @@
             $db->Query("TRUNCATE TABLE `groups`");
             $db->Query("TRUNCATE TABLE `assists`");
             $db->Query("TRUNCATE TABLE `curses_groups`");
+            $db->Query("TRUNCATE TABLE `records`");
         } catch (\Throwable $th) {
             return;
         }
