@@ -80,10 +80,50 @@
             return;
         }
     }
+    function BackupRegist() {
+        try {
+            $db = new DBSystem();
+            $consult = $db->Query("SELECT * FROM `records`");
+            if ($consult) {
+                $data = array();
+                while ($record = $consult->fetch_array()) {
+                    array_push($data, array(
+                        'id' => $record['id'],
+                        'movent' => $record['movent'],
+                        'date' => $record['date'],
+                        'hour' => $record['hour'],
+                        'importance' => $record['importance'],
+                        'idAdmin' => $record['idAdmin'],
+                        'type' => $record['type'],
+                        'section' => $record['section']
+                    ));
+                }
+                $age = intval(date("Y")) - 1;
+                $fileName = "../../olds/$age/records.json";
+                $handle = fopen($fileName, "w+");
+                fwrite($handle, json_encode($data));
+                fclose($handle);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
+    function ClearDataOfDatabases() {
+        try {
+            $db = new DBSystem();
+            $db->Query("DELETE FROM `assist`");
+            $db->Query("DELETE FROM `curses_groups`");
+            $db->Query("DELETE FROM `groups`");
+        } catch (\Throwable $th) {
+            return;
+        }
+    }
 
     function ClearOldData() {
         BackupDatabases();
+        BackupRegist();
         BackupFiles();
+        ClearDataOfDatabases();
     }
-    ClearOldData();
+    //ClearOldData();
 ?>

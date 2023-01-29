@@ -37,9 +37,8 @@
         foreach ($curses as $curse) {
             $next = getNextCurse(base64_decode($curse));
             $current = base64_encode(utf8_decode(base64_decode($curse)));
-            $consult = $db->Query("UPDATE `students` SET `curse`='$next' WHERE `curse`='$current'");
-
-            echo base64_decode($curse)." to ".utf8_encode(base64_decode($next)).": ".(($consult)? "true": "false")."<br>";
+            $db->Query("UPDATE `students` SET `curse`='$next' WHERE `curse`='$current'");
+            //echo base64_decode($curse)." to ".utf8_encode(base64_decode($next)).": ".(($consult)? "true": "false")."<br>";
         }
     }
 ?>

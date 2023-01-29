@@ -231,5 +231,5 @@
             fwrite($filejson, json_encode($json_final));
         }
     }
-    ConvertAllRegistsInPDF();
+    //ConvertAllRegistsInPDF();
 ?>
