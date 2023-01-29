@@ -111,9 +111,9 @@
     function ClearDataOfDatabases() {
         try {
             $db = new DBSystem();
-            $db->Query("DELETE FROM `assist`");
-            $db->Query("DELETE FROM `curses_groups`");
-            $db->Query("DELETE FROM `groups`");
+            $db->Query("TRUNCATE TABLE `groups`");
+            $db->Query("TRUNCATE TABLE `assists`");
+            $db->Query("TRUNCATE TABLE `curses_groups`");
         } catch (\Throwable $th) {
             return;
         }

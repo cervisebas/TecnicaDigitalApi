@@ -1,6 +1,5 @@
 <?php
-    error_reporting(E_ERROR | E_PARSE);
-    include_once "../classes.php";
+    include_once "../database.php";
 
     function getNextCurse(string $curse) {
         $year = date('Y');
