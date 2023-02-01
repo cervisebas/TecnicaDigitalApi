@@ -7,8 +7,9 @@ tmp_files/*
 !image/default.png
 !image/default-admin.png
 !image/default-admin-bad.png
+!image/server.png
 !image/get.php
-scripts/SecurityKeyCodes.php
+!scripts/SecurityKeyCodes.php
 build
 .tmp_compress
 test.php
