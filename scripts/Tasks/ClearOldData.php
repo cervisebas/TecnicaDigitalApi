@@ -108,12 +108,39 @@
             //throw $th;
         }
     }
+    function BackupAnnotations() {
+        try {
+            $db = new DBSystem();
+            $consult = $db->Query("SELECT * FROM `annotations`");
+            if ($consult) {
+                $data = array();
+                while ($record = $consult->fetch_array()) {
+                    array_push($data, array(
+                        'id' => $record['id'],
+                        'id_group' => $record['id_group'],
+                        'id_directive' => $record['id_directive'],
+                        'date' => $record['date'],
+                        'hour' => $record['hour'],
+                        'note' => $record['note']
+                    ));
+                }
+                $age = intval(date("Y")) - 1;
+                $fileName = "../../olds/$age/annotations.json";
+                $handle = fopen($fileName, "w+");
+                fwrite($handle, json_encode($data));
+                fclose($handle);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+    }
     function ClearDataOfDatabases() {
         try {
             $db = new DBSystem();
             $db->Query("TRUNCATE TABLE `groups`");
             $db->Query("TRUNCATE TABLE `assists`");
             $db->Query("TRUNCATE TABLE `curses_groups`");
+            $db->Query("TRUNCATE TABLE `annotations`");
             $db->Query("TRUNCATE TABLE `records`");
         } catch (\Throwable $th) {
             return;
@@ -123,6 +150,7 @@
     function ClearOldData() {
         BackupDatabases();
         BackupRegist();
+        BackupAnnotations();
         BackupFiles();
         ClearDataOfDatabases();
     }

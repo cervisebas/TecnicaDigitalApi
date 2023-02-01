@@ -8,9 +8,9 @@
 
     function ProcessNewYear() {
         try {
-            // Check execution.
+            // Check after execution.
             $yearProcess = intval(date("Y")) - 1;
-            if (file_exists("../../olds/$yearProcess/index_$yearProcess.json")) return;
+            if (file_exists("../../olds/index_$yearProcess.json")) return;
 
             $start = microtime(true);
             ConvertAllRegistsInPDF();
