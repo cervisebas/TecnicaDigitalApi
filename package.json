@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "scripts": {
     "sync": "node sync-git.js",
-    "build": "node gulpfile.js"
+    "build": "node gulpfile.js",
+    "up-sync": "git pull origin main"
   },
   "type": "module",
   "repository": "https://github.com/cervisebas/TecnicaDigitalApi.git",
